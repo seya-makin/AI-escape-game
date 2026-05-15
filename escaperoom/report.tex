@@ -1,0 +1,2341 @@
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  EECE453 — Escape Room AI  |  Comprehensive Project Report                 ║
+% ║  American University in Dubai                                               ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\documentclass[12pt, a4paper]{report}
+
+% ── Encoding & fonts ──────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ── Page geometry ─────────────────────────────────────────────────────────────
+\usepackage[
+  top=2.5cm, bottom=2.5cm,
+  left=3.0cm, right=2.5cm,
+  headheight=14pt
+]{geometry}
+
+% ── Headers & footers ─────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{EECE453 --- Escape Room AI}}
+\fancyhead[R]{\small\textit{American University in Dubai}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Colour ────────────────────────────────────────────────────────────────────
+\usepackage[dvipsnames, table]{xcolor}
+\definecolor{AUDblue}{RGB}{26,53,128}
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{rulecolor}{RGB}{160,160,160}
+
+% ── Graphics & TikZ ──────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, decorations.pathmorphing}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ── Mathematics ───────────────────────────────────────────────────────────────
+\usepackage{amsmath, amssymb, amsthm}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{corollary}[theorem]{Corollary}
+
+% ── Code listings ─────────────────────────────────────────────────────────────
+\usepackage{listings}
+\lstdefinestyle{pyStyle}{
+  language=Python,
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{AUDblue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{BrickRed},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  frame=single,
+  rulecolor=\color{rulecolor},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4,
+  showstringspaces=false,
+  captionpos=b,
+}
+\lstdefinestyle{jsStyle}{
+  language=Java,
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{AUDblue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{BrickRed},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  frame=single,
+  rulecolor=\color{rulecolor},
+  breaklines=true,
+  tabsize=2,
+  showstringspaces=false,
+  captionpos=b,
+  morekeywords={const, let, var, async, await, function, new, class, import, from, of, export},
+}
+\lstset{style=pyStyle}
+
+% ── Tables ────────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% ── Captions ──────────────────────────────────────────────────────────────────
+\usepackage[
+  font=small, labelfont=bf,
+  justification=centering
+]{caption}
+\usepackage{subcaption}
+
+% ── Hyperlinks ────────────────────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=AUDblue,
+  citecolor=AUDblue,
+  urlcolor=AUDblue,
+  bookmarksnumbered=true,
+]{hyperref}
+
+% ── Bibliography ──────────────────────────────────────────────────────────────
+\usepackage[numbers, sort&compress]{natbib}
+\bibliographystyle{plainnat}
+
+% ── Miscellaneous ─────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{mdframed}
+\usepackage{tocloft}
+\setlength{\cftbeforesecskip}{2pt}
+
+% ── Chapter title style ───────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{AUDblue}}
+  {\chaptertitlename\ \thechapter}{18pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{30pt}
+
+% ─────────────────────────────────────────────────────────────────────────────
+%  TITLE-PAGE HELPERS
+% ─────────────────────────────────────────────────────────────────────────────
+\newcommand{\HRule}{\rule{\linewidth}{0.6mm}}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  TITLE PAGE                                                                 ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\begin{titlepage}
+\begin{center}
+
+\includegraphics[height=4.5cm]{aud_logo.png}
+
+\vspace{0.6cm}
+{\Large \textbf{American University in Dubai}}\\[0.15cm]
+{\large Department of Electrical Engineering \& Computer Science}\\[0.15cm]
+{\large EECE453 --- Artificial Intelligence}
+
+\vspace{0.8cm}
+\HRule\\[0.3cm]
+{\Huge\bfseries\color{AUDblue} Escape Room AI}\\[0.2cm]
+\parbox{0.8\textwidth}{\centering\LARGE\bfseries
+A 3-D Planning System with Classical Search
+and Genetic Puzzle Generation}\\[0.2cm]
+\HRule
+
+\vspace{0.8cm}
+\begin{tabular}{rl}
+\textbf{Instructor:} & Dr.\ Nejib Ben Hadj-Alouane \\[4pt]
+\textbf{Prepared by:} & Mohannad Abourehab \\
+                       & Seya Makin \\
+                       & Lina Noman \\[4pt]
+\textbf{Due Date:}    & April 19, 2026 \\[4pt]
+\textbf{Academic Year:} & 2025--2026, Spring Semester \\
+\end{tabular}
+
+\vfill
+{\small\textit{Submitted in partial fulfilment of the requirements for EECE453.}}
+
+\end{center}
+\end{titlepage}
+
+% ── Front matter ──────────────────────────────────────────────────────────────
+\pagenumbering{roman}
+\setcounter{page}{2}
+
+% ── Abstract ─────────────────────────────────────────────────────────────────
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\onehalfspacing
+
+We present the design, implementation, and evaluation of the \textit{Escape Room AI}
+system, a full-stack interactive application that combines a richly detailed
+three-dimensional escape-room game with a back-end artificial intelligence
+planning engine.  The front end is built with Three.js (WebGL), providing
+approximately 100 \texttt{BoxGeometry} objects that furnish a believable
+office-style room equipped with six light sources, exponential fog, ACES
+filmic tone mapping, and CSS2D floating labels.  Users navigate the space in
+first-person and interact with objects to solve a chain of puzzles.
+
+The AI back end, written in Python and served via Flask, implements four
+classical graph-search algorithms: Breadth-First Search (BFS), Depth-First
+Search (DFS), Uniform-Cost Search (UCS), and A$^{\ast}$.  Each algorithm
+operates on a mixed state space (one nominal location variable, four Boolean lock flags, three Boolean collection flags, one Boolean knowledge flag, and one frozen-set inventory) and generates a complete plan
+that the front end replays step-by-step through an animated AI agent.  We
+supply a formal proof that the A$^{\ast}$ heuristic is both admissible and
+consistent, guaranteeing optimality.
+
+Beyond classical planning, we designed a Genetic Algorithm (GA) that
+\emph{evolves} novel escape-room puzzle configurations.  A$^{\ast}$ serves as
+the fitness oracle, ensuring every evaluated individual is provably solvable
+and scored by difficulty.  Three difficulty levels (easy, medium, hard) govern
+both key placement for human play and the GA difficulty target range.
+
+Experimental benchmarks on a hard-difficulty puzzle across three runs confirm
+that BFS and UCS expand identical node counts (they are equivalent when all
+action costs are uniform), that A$^{\ast}$'s heuristic guidance cuts
+exploration by 4--19\% depending on difficulty (a modest margin reflecting the small state space), and that DFS remains competitive owing to
+the linear dependency structure of the puzzle chain.  All 15 automated
+validation runs passed without error.  The total codebase spans approximately
+3,100 lines of original code (see Appendix~B for the full file listing).
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} escape room, state-space search, BFS, DFS, UCS,
+A$^{\ast}$, genetic algorithm, procedural content generation, Three.js,
+Flask, puzzle planning.
+
+\newpage
+
+% ── Table of Contents ─────────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+\lstlistoflistings
+\newpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\onehalfspacing
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 1 — INTRODUCTION                                                   ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{Introduction}
+\label{chap:intro}
+
+\section{Background and Motivation}
+
+Escape rooms have become a popular medium for studying human problem-solving,
+but they also present a rich arena for artificial intelligence research.  A
+player trapped inside a locked room must identify hidden objects, decode clues,
+and operate mechanisms in a specific causal order --- all of which map naturally
+onto the classical AI formalism of state-space search: a clearly defined
+initial state, a finite set of actions with preconditions and effects, and a
+goal test.
+
+The pedagogical appeal is immediate.  An agent that plays an escape room must
+plan: it cannot interact with the safe before it knows the combination, it
+cannot obtain the combination before it opens the cabinet, and so on.  This
+strict prerequisite ordering is analogous to STRIPS-style planning
+problems~\cite{russell2020ai}, making escape rooms a compelling and visually
+engaging benchmark for comparing search strategies.
+
+At the same time, designing such puzzles by hand is labour-intensive.  A fixed
+puzzle quickly becomes stale for replay, and hand-crafted difficulty curves are
+hard to calibrate.  This motivates the application of \emph{procedural content
+generation} (PCG) --- using algorithms to create game content automatically.
+Genetic algorithms are well suited to PCG because they can explore a large
+combinatorial space of puzzle designs while an external fitness function (here,
+a classical solver) acts as the quality oracle~\cite{shaker2016procedural}.
+
+We chose an escape room specifically because the puzzle structure lends itself
+to a clean STRIPS encoding while the three-dimensional visual environment keeps
+the system engaging for demonstration.  All objects, lights, and interactive
+elements were crafted from first principles without relying on external asset
+libraries, making the codebase fully self-contained.
+
+\section{System Overview}
+
+We built the \textit{Escape Room AI} as a single-page web application with a clean client--server split.  The front end, written in JavaScript with Three.js and comprising approximately 1,700 lines of code, renders a fully interactive 3-D escape room in WebGL.  The player navigates with WASD keys and mouse look, interacts with objects via raycasting, and can invoke an AI agent that replays a computed plan with smooth animations.  The back end, written in Python~3 with Flask and comprising approximately 1,400 lines, exposes three REST endpoints that provide access to the four classical search algorithms and the genetic algorithm.  We represent all game state using immutable frozen dataclasses, and the server is entirely stateless between requests --- each API call reconstructs the initial state from scratch, which greatly simplified debugging and ensured reproducible benchmarks.  Figure~\ref{fig:architecture} (Section~\ref{sec:architecture}) shows the high-level architecture.  The total project comprises approximately 3,100 lines of original code (Appendix~B lists every file).
+
+\section{Research Questions}
+
+This project addresses four concrete research questions.  First, we ask about \textbf{completeness and optimality}: under what conditions do BFS, DFS, UCS, and A$^{\ast}$ guarantee finding a solution, and which ones guarantee optimality?  Second, we investigate \textbf{heuristic effectiveness}: does our domain-specific A$^{\ast}$ heuristic actually reduce node expansion compared with uninformed search, and by how much?  Third, we examine \textbf{BFS--UCS equivalence}: why do these two algorithms produce identical node counts in our domain, and can we prove this formally?  Fourth, we evaluate \textbf{GA puzzle quality}: can a genetic algorithm reliably produce solvable puzzles within a target difficulty range, and how does fitness evolve across generations?
+
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 2 — EXISTING WORK REVIEW                                           ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{Existing Work Review}
+\label{chap:litreview}
+
+A review of existing work clarifies the state of practice, identifies gaps in current approaches, and supports the rationale for our system's design.  We surveyed both the academic literature on AI planning and procedural content generation, and existing open-source projects on GitHub that apply search algorithms to puzzle and escape-room domains.  Table~\ref{tab:existing_systems} summarises five representative systems and highlights how our project addresses their collective limitations.
+
+\section{Academic Foundations}
+
+Classical AI planning treats a problem as a tuple $\langle S, A, s_0, G \rangle$ where $S$ is the set of possible world states, $A$ is a set of actions each carrying a precondition and an effect, $s_0 \in S$ is the initial state, and $G \subseteq S$ is the set of goal states~\cite{russell2020ai}.  The STRIPS formalism~\cite{fikes1971strips} decomposes each action into preconditions, add-effects, and delete-effects.  Our Python \texttt{Action} hierarchy follows this tradition, representing state transitions functionally using immutable frozen dataclasses.
+
+A$^{\ast}$, introduced by Hart, Nilsson, and Raphael~\cite{hart1968formal}, expands nodes in order of $f(n) = g(n) + h(n)$ and is both complete and optimally efficient when the heuristic is admissible and consistent~\cite{russell2020ai, pearl1984heuristics}.  Genetic algorithms~\cite{holland1992adaptation, goldberg1989genetic} maintain a population of candidate solutions that evolve through selection, crossover, and mutation.  Shaker, Togelius, and Nelson~\cite{shaker2016procedural} define \emph{search-based PCG} as the use of optimisation algorithms to generate game content, with solvability enforced as a hard constraint~\cite{togelius2011search}.
+
+\section{Existing Systems and Projects}
+
+We identified five open-source projects and platforms that share design goals with our system.  Each addresses a subset of the challenges we tackle --- AI-based puzzle solving, 3-D visualisation, or procedural generation --- but none combines all three in a single integrated application.
+
+\textbf{Escape-Room- (Raheem, 2024)}~\cite{gh_escaperoom} is a Python-based escape room simulation where an autonomous agent navigates a maze-like environment, collecting keys and avoiding traps.  It integrates BFS, A$^{\ast}$, CSP with backtracking, Minimax for adversarial guard AI, and Bayesian reasoning for probabilistic trap avoidance.  This is the closest project to ours in scope, but it is limited to a text-based terminal and 2-D Pygame interface with no 3-D visualisation or procedural puzzle generation.
+
+\textbf{BreakingBlocks (Badawy, 2024)}~\cite{gh_breakingblocks} is a Pygame puzzle game that benchmarks seven search algorithms (DFS, BFS, DLS, IDDFS, UCS, Greedy Best-First, and A$^{\ast}$) on a grid-clearing puzzle.  It provides the most comprehensive algorithm comparison among the projects we surveyed, including visual performance charts.  However, it is not an escape room --- the puzzle is a block-clearing grid --- and it lacks procedural level generation.
+
+\textbf{EscAIpe Room (Shyke, 2024)}~\cite{gh_escaipe} is a JavaFX escape room game that uses the OpenAI GPT API to power an interactive hint system with natural-language understanding.  It demonstrates AI-enhanced gameplay with context-aware puzzle guidance, but relies on machine learning (LLMs) rather than classical search algorithms, and runs as a desktop application rather than in the browser.
+
+\textbf{Escape-Room-Demo (Reddy, 2026)}~\cite{gh_escapedemo} is a React + Three.js browser-based 3-D escape room with progressive difficulty levels and GSAP animations.  It is the closest match to our front-end architecture, but it contains no AI component --- all puzzles are hand-designed with no automated solver or procedural generation.
+
+\textbf{Zeldagen (Vip3, 2024)}~\cite{gh_zeldagen} uses a genetic algorithm to procedurally generate Zelda-style dungeon topologies, directly addressing the PCG challenge.  It evaluates fitness based on dungeon graph structure and includes benchmarking tools.  However, it generates abstract graph topologies rather than playable game levels, and has no real-time game engine or search-based solver.
+
+\section{Comparative Analysis}
+
+\begin{table}[H]
+\centering
+\caption{Comparative view of existing systems and our Escape Room AI.}
+\label{tab:existing_systems}
+\small
+\begin{tabular}{@{}p{2.4cm}p{2.8cm}p{2.2cm}p{1.5cm}p{1.5cm}p{1.8cm}@{}}
+\toprule
+\textbf{System} & \textbf{AI / Algorithms} & \textbf{Visualisation} & \textbf{Procedural Gen.} & \textbf{Web-based} & \textbf{Limitations} \\
+\midrule
+Escape-Room- \cite{gh_escaperoom}
+  & BFS, A{*}, CSP, Minimax, Bayesian
+  & Terminal + Pygame 2-D
+  & No
+  & No
+  & No 3-D; no PCG \\[6pt]
+BreakingBlocks \cite{gh_breakingblocks}
+  & 7 search algorithms (BFS, DFS, UCS, A{*}, etc.)
+  & Pygame 2-D
+  & No
+  & No
+  & Grid puzzle, not escape room \\[6pt]
+EscAIpe Room \cite{gh_escaipe}
+  & OpenAI GPT (LLM)
+  & JavaFX desktop
+  & No
+  & No
+  & ML-based, not classical AI \\[6pt]
+Escape-Room-Demo \cite{gh_escapedemo}
+  & None
+  & React + Three.js 3-D
+  & No
+  & Yes
+  & No AI solver \\[6pt]
+Zeldagen \cite{gh_zeldagen}
+  & Genetic Algorithm
+  & Text UI
+  & Yes
+  & No
+  & Abstract graphs only \\[6pt]
+\midrule
+\textbf{Our system}
+  & BFS, DFS, UCS, A{*} + GA with A{*} oracle
+  & Three.js 3-D (WebGL)
+  & Yes (GA)
+  & Yes
+  & Linear dependency chain \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The comparative analysis reveals that no single existing project combines classical AI search algorithms, a 3-D browser-based game environment, and procedural puzzle generation in one integrated system.  Projects that implement multiple search algorithms (Escape-Room-, BreakingBlocks) lack 3-D visualisation and procedural generation.  The project with a Three.js 3-D escape room (Escape-Room-Demo) has no AI component.  The procedural generation project (Zeldagen) produces abstract topologies rather than playable puzzles.
+
+Our Escape Room AI addresses this gap by integrating all three capabilities: four classical search algorithms with formal proofs, a GA that uses A$^{\ast}$ as a fitness oracle to generate solvable puzzles at calibrated difficulty levels, and a richly detailed Three.js 3-D environment --- all served as a single-page web application.  The main limitation of our approach, as discussed in Section~\ref{sec:limitations}, is the linear dependency chain structure of the puzzle, which limits the meaningful differentiation between algorithms.
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 3 — SYSTEM OVERVIEW                                                ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{System Overview}
+\label{chap:sysoverview}
+
+\section{Architecture}
+\label{sec:architecture}
+
+The system follows a classic client--server architecture in which the browser
+hosts all rendering and user-interaction logic while the server houses all AI
+computation.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.2cm and 3.0cm,
+  box/.style={rectangle, rounded corners, draw=AUDblue, line width=1.2pt,
+              fill=AUDblue!8, text width=3.4cm, align=center,
+              minimum height=1.0cm, font=\small},
+  arr/.style={-Stealth, thick, color=AUDblue!70},
+  lbl/.style={font=\tiny\itshape, color=gray},
+]
+  % Top row: Browser and Flask
+  \node[box] (browser) {Browser\\(Three.js / JS)};
+  \node[box, right=4.0cm of browser] (flask) {Flask Server\\(Python 3)};
+
+  % Three request arrows (Browser -> Flask)
+  \draw[arr] ([yshift=4pt]browser.east) -- node[above, lbl]{\texttt{POST /api/solve}} ([yshift=4pt]flask.west);
+  \draw[arr] (browser.east) -- node[above, lbl, yshift=-2pt]{\texttt{POST /api/generate}} (flask.west);
+  \draw[arr] ([yshift=-4pt]browser.east) -- node[below, lbl]{\texttt{POST /api/solve\_ga}} ([yshift=-4pt]flask.west);
+
+  % JSON response arrow (Flask -> Browser)
+  \draw[arr] ([yshift=-12pt]flask.west) -- node[below, lbl, yshift=-2pt]{JSON response} ([yshift=-12pt]browser.east);
+
+  % Second row: Search Algorithms and GA side by side
+  \node[box, below left=1.5cm and 0.3cm of flask] (algos)
+        {Search Algorithms\\\texttt{BFS, DFS, UCS, A*}};
+  \node[box, below right=1.5cm and 0.3cm of flask] (ga)
+        {Genetic Algorithm\\(PuzzleGA)};
+
+  % Dispatch arrows from Flask down to both
+  \draw[arr] (flask.south) -- ++(0,-0.4) -| node[near end, left, lbl]{dispatch} (algos.north);
+  \draw[arr] (flask.south) -- ++(0,-0.4) -| node[near end, right, lbl]{dispatch} (ga.north);
+
+  % GameState box below, centred
+  \node[box, below=1.5cm of flask, yshift=-2.2cm] (game)
+        {GameState / DynState\\{\tiny(input, built fresh\\per request)}};
+
+  % GameState feeds into both algorithms (upward arrows)
+  \draw[arr] (game.north) -- ++(0,0.4) -| node[near end, left, lbl]{initial state} (algos.south);
+  \draw[arr] (game.north) -- ++(0,0.4) -| node[near end, right, lbl]{initial state} (ga.south);
+
+  % Plan+stats return arrows (algorithms -> Flask)
+  \draw[arr] (algos.north east) -- node[right, lbl, xshift=2pt]{plan + stats} (flask.south west);
+  \draw[arr] (ga.north west) -- node[left, lbl, xshift=-2pt]{plan + stats} (flask.south east);
+
+\end{tikzpicture}
+\caption{High-level architecture of the Escape Room AI system.}
+\label{fig:architecture}
+\end{figure}
+
+The browser communicates with the server exclusively through three REST
+endpoints.  The first, \texttt{POST /api/solve}, runs a chosen classical algorithm on the
+fixed escape-room puzzle.  The second, \texttt{POST /api/generate}, runs the GA to evolve a new puzzle at
+the requested difficulty.  The third, \texttt{POST /api/solve\_ga}, runs a chosen classical algorithm on a
+previously generated GA puzzle.  All requests and responses use JSON.  We deliberately made the server entirely stateless: the
+initial \texttt{GameState} (or \texttt{DynState}) is reconstructed fresh for
+every request from the hardcoded initial conditions, which simplifies debugging and ensures that every benchmark run starts from a clean slate.
+
+\section{User Interface Components}
+
+The UI is divided into several zones that remain visible simultaneously during
+gameplay.
+
+\subsection{Start Overlay}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\textwidth]{screenshot_menu.png}
+  \caption{The start-screen overlay showing difficulty selection and control hints.}
+  \label{fig:screenshot_menu}
+\end{figure}
+
+When the page loads, users see a centred card (Figure~\ref{fig:screenshot_menu})
+inviting them to choose a difficulty level: Easy, Medium, or Hard.  A short
+hint line below the difficulty grid tells them where the key is hidden at the
+selected level.  The \textit{Click to Enter} button acquires a pointer lock so
+the mouse controls camera rotation.
+
+\subsection{In-Game HUD}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{screenshot_room.png}
+  \caption{The 3-D escape room viewed from the start area. Visible objects include the desk, bookshelf, and exit door.}
+  \label{fig:screenshot_room}
+\end{figure}
+
+Once inside the room (Figure~\ref{fig:screenshot_room}), the player sees several
+HUD zones arranged around the 3-D viewport.  On the left side, a mode badge shows
+whether the player is in HUMAN MODE or AI MODE, a level badge displays the
+current difficulty, and an inventory card lists collected items as the player picks them
+up.  On the right side, we placed the algorithm selector buttons (BFS, DFS, UCS, A*),
+a ``Benchmark All 4'' button that triggers a side-by-side comparison, and collapsible
+cards for search metrics and GA statistics.  At the top centre, an action bar displays
+the current action name during AI playback so the observer can follow what the agent
+is doing step by step.  At the bottom centre, a prompt bar appears with the text
+``E [object label]'' whenever the player's crosshair hovers over an interactable object
+within range.  We also placed a small \texttt{+} crosshair mark at the screen centre for
+        raycasting.
+
+\subsection{AI Agent Visualisation}
+
+Pressing \texttt{Tab} switches the game to AI mode
+(Figure~\ref{fig:screenshot_ai_agent}).  A bright orange box-shaped agent
+spawns at the start position and navigates to each area according to the
+computed plan.  The ceiling mesh is hidden to provide a bird's-eye camera view,
+and the camera follows the agent with a smooth lerp.  Each action name is
+displayed in the top action bar as it executes.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\textwidth]{screenshot_ai_agent.png}
+  \caption{The AI agent (orange box) mid-plan, navigating toward the cabinet area.}
+  \label{fig:screenshot_ai_agent}
+\end{figure}
+
+\subsection{Benchmark Panel}
+
+The benchmark panel (Figure~\ref{fig:screenshot_benchmark}) appears after
+clicking \textit{Benchmark All 4}.  It runs all four algorithms against the
+same puzzle sequentially and displays a table of nodes expanded and plan length
+for each.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\textwidth]{screenshot_benchmark.png}
+  \caption{The benchmark results panel showing all four algorithms on the same hard puzzle.}
+  \label{fig:screenshot_benchmark}
+\end{figure}
+
+\section{Agent Model}
+
+The AI agent is modelled as a simple deliberative agent~\cite{russell2020ai}
+that:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Receives the initial state from the server.
+  \item Calls the selected search algorithm to compute a complete plan offline
+        (no interleaving of planning and execution).
+  \item Executes the plan step by step with a fixed 1,600 ms delay between
+        steps so that the human observer can follow the agent's actions.
+\end{enumerate}
+
+This offline, open-loop architecture is sufficient for our deterministic, fully
+observable puzzle domain.  No re-planning is required because the environment
+does not change unexpectedly during the AI's execution.
+
+\section{Data Flow}
+
+A typical AI-mode cycle proceeds as follows:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item User presses \texttt{Tab}; JavaScript \texttt{startAIMode()} is called.
+  \item A snapshot \texttt{mySession = aiSessionId} is taken to guard against
+        race conditions (Section~\ref{sec:sessionguard}).
+  \item A POST request is sent to \texttt{/api/solve} with the selected
+        algorithm name.
+  \item Flask instantiates \texttt{GameState.initial()} and calls the
+        algorithm.
+  \item The algorithm returns a \texttt{(plan, stats)} tuple; Flask serialises
+        the plan as a list of action-name strings and the stats as a dictionary.
+  \item The browser receives the JSON, displays the metrics card, and begins
+        replaying the plan: for each action name, it updates the 3-D scene
+        (show/hide objects, trigger animations, move the agent) and waits
+        1.6 seconds before proceeding.
+  \item When the last action executes, the win overlay appears.
+\end{enumerate}
+
+The same flow applies for GA puzzles, except that the request is first sent to
+\texttt{/api/generate} to obtain a \texttt{PuzzleConfig}, and the subsequent
+solve call goes to \texttt{/api/solve\_ga} with the puzzle config embedded in
+the body.
+
+\section{Game Mechanics}
+
+Human play follows a first-person exploration model.  The player moves with
+WASD, looks around with the mouse (pointer lock), and presses \texttt{E} to
+interact with the object at the crosshair centre.  Interactable objects are
+highlighted with a gold emissive glow and a floating CSS2D label when the
+player is within the interaction range (4.0~m on Easy, 3.2~m on Medium,
+2.2~m on Hard).  Pressing \texttt{Tab} at any time hands control to the AI
+agent.  Pressing \texttt{R} or clicking \textit{Play Again} resets all state.
+
+Three difficulty levels govern key placement and interaction range:
+
+\begin{table}[H]
+\centering
+\caption{Difficulty levels and their effect on gameplay.}
+\label{tab:difficulty}
+\begin{tabular}{lL{5cm}c}
+\toprule
+\textbf{Level} & \textbf{Small Key Placement} & \textbf{Interact Range} \\
+\midrule
+Easy   & On the desk surface --- high visibility & 4.0 m \\
+Medium & On the floor near the bookshelf --- moderate visibility & 3.2 m \\
+Hard   & Far corner near the exit --- low visibility & 2.2 m \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 4 — ENVIRONMENT AND STATE SPACE                                    ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{Environment and State Space}
+\label{chap:envstate}
+
+\section{Three-Dimensional Room Construction}
+
+We constructed the escape room almost entirely from Three.js
+\texttt{BoxGeometry} primitives, using \texttt{MeshStandardMaterial} for
+physically-based shading.  The room measures $20 \times 4 \times 20$ metres
+(width $\times$ height $\times$ depth), with the exit doorway centred on the
+positive-$z$ wall.  Table~\ref{tab:room_objects} summarises the major furniture
+groups.
+
+\begin{longtable}{L{3.5cm}L{5cm}C{2cm}}
+\caption{Major 3-D room objects and approximate primitive counts.}
+\label{tab:room_objects}\\
+\toprule
+\textbf{Object Group} & \textbf{Description} & \textbf{Primitives} \\
+\midrule
+\endfirsthead
+\multicolumn{3}{c}{\textit{Table \ref{tab:room_objects} continued from previous
+page}}\\
+\toprule
+\textbf{Object Group} & \textbf{Description} & \textbf{Primitives} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Room shell        & Floor, ceiling, five wall segments       & 7   \\
+Desk              & Desktop slab, body, rug, chair (seat, back, pedestal) & 7 \\
+Cabinet           & Body box, interactive door               & 2   \\
+Safe              & Body box, interactive door               & 2   \\
+Bookshelf         & Shelf unit + 8 individual book boxes in two colour rows & 9 \\
+Computer monitor  & Screen panel, screen glow, stand neck, stand base & 4  \\
+Floor lamp        & Base plate, pole, shade + PointLight     & 3+L \\
+Potted plant      & Pot, foliage, top cluster                & 3   \\
+Sofa              & Seat base, back rest, two arms, seat panel & 5  \\
+Coffee table      & Top + four legs                          & 5   \\
+Filing cabinet    & Body, top cap, two handles               & 4   \\
+Whiteboard        & Frame, white surface                     & 2   \\
+Wall sconce       & Bracket, globe + PointLight              & 2+L \\
+Paintings         & Frame + canvas (two: abstract + AUD logo) & 4  \\
+AUD logo canvas   & Procedural Canvas2D texture on BoxGeometry & 3  \\
+Doormat           & Thin box near exit                       & 1   \\
+Main rug          & Thin box under desk area                 & 1   \\
+Ceiling lamp      & Mount, globe + PointLight                & 2+L \\
+Hiding-spot meshes & 10 distinct spots (drawer, papers, book, cabinet door, vase, books-on-shelf, safe door, painting, corner rug, doormat) & 10 \\
+Lock fixtures     & Padlock, keyhole cylinder, safe dial, exit door slab & 4 \\
+\midrule
+\textbf{Total}    &                                          & $\approx$\textbf{100} \\
+\end{longtable}
+
+\subsection{Lighting System}
+
+Six light sources illuminate the scene:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Ambient light} (\texttt{0xffe8c8}, intensity~0.35): warm fill
+        that prevents pitch-black shadows.
+  \item \textbf{Directional ``sun''} (\texttt{0xfff5e6}, intensity~1.4):
+        positioned at $(4, 9, -3)$; casts PCF-soft shadows with a
+        $2048 \times 2048$ shadow map and a bias of $-0.0003$.
+  \item \textbf{Ceiling lamp} (\texttt{PointLight}, \texttt{0xffeedd},
+        intensity~2.2, range~18): centred overhead at $(0, 3.65, 0)$.
+  \item \textbf{Left fill} (\texttt{PointLight}, \texttt{0xc8d8ff},
+        intensity~0.45, range~22): cool blue counterpoint from $(-8, 2.5, 2)$.
+  \item \textbf{Wall sconce} (\texttt{PointLight}, \texttt{0xffe0a0},
+        intensity~0.8, range~8): attached to the left wall at $(-9.6, 2.6, 4)$.
+  \item \textbf{Floor lamp} (\texttt{PointLight}, \texttt{0xffe0a0},
+        intensity~0.6, range~7): standing left of the desk at
+        $(-6.5, 1.85, -3.0)$.
+\end{enumerate}
+
+The renderer uses ACES filmic tone mapping with exposure~0.85 and
+\texttt{PCFSoftShadowMap} for soft shadow edges.  \texttt{FogExp2} with
+density~0.028 adds atmospheric depth while keeping the room readable.
+
+\subsection{AUD Logo Canvas Texture}
+
+One of the back-wall artworks is a procedurally generated AUD institutional
+logo.  We created a $480 \times 220$ pixel HTML5 \texttt{Canvas} element, drew
+the ``AUD'' wordmark in bold 92\,px Georgia on the left, added a double
+vertical rule as a divider, and rendered ``AMERICAN / UNIVERSITY / IN DUBAI''
+in bold 30\,px Arial on the right.  The canvas was converted to a
+\texttt{THREE.CanvasTexture} and mapped onto a \texttt{BoxGeometry} mesh with
+a blue border frame (\texttt{0x1a3580}) and white mat (\texttt{0xf8f8f8}).
+
+\section{State Representation}
+\label{sec:staterepresentation}
+
+We represent the escape-room world with ten Boolean or nominal variables
+collected in a Python frozen dataclass called \texttt{GameState}:
+
+\begin{table}[H]
+\centering
+\caption{Variables of the \texttt{GameState} dataclass.}
+\label{tab:gamestate}
+\begin{tabular}{llL{5.5cm}}
+\toprule
+\textbf{Variable} & \textbf{Type} & \textbf{Semantics} \\
+\midrule
+\texttt{player\_location}        & \texttt{str}            & One of five regions \\
+\texttt{inventory}               & \texttt{FrozenSet[str]} & Items currently carried \\
+\texttt{drawer\_locked}          & \texttt{bool}           & True until small key is used \\
+\texttt{cabinet\_locked}         & \texttt{bool}           & True until cabinet key is used \\
+\texttt{safe\_locked}            & \texttt{bool}           & True until code is entered \\
+\texttt{exit\_locked}            & \texttt{bool}           & True until master key is used \\
+\texttt{small\_key\_collected}   & \texttt{bool}           & Redundant with inventory; speeds heuristic \\
+\texttt{cabinet\_key\_collected} & \texttt{bool}           & As above \\
+\texttt{code\_known}             & \texttt{bool}           & Player has read the safe code \\
+\texttt{master\_key\_collected}  & \texttt{bool}           & As above \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+By using \texttt{@dataclass(frozen=True)}, every instance is immutable and
+hashable, making it safe to store in Python \texttt{set}s and dictionaries as
+explored/seen markers.  The \texttt{apply} method of every action returns a
+brand-new state via \texttt{dataclasses.replace}, which copies all fields and
+overrides only those changed by the action.
+
+The five traversable regions and their approximate three-dimensional coordinates
+(in metres) are listed in Table~\ref{tab:areas}.
+
+\begin{table}[H]
+\centering
+\caption{Play areas and their 3-D reference positions.}
+\label{tab:areas}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Area Name} & \textbf{Position $(x,\,y,\,z)$} & \textbf{Key Contents} \\
+\midrule
+\texttt{start\_area}   & $(0.0,\;0,\;-7.5)$             & Spawn point \\
+\texttt{desk\_area}    & $(0.5,\;0,\;-4.5)$             & Desk, small key, drawer, cabinet key \\
+\texttt{cabinet\_area} & $(7.0,\;0,\;\phantom{-}3.0)$   & Filing cabinet, code paper \\
+\texttt{safe\_area}    & $(-7.0,\;0,\;\phantom{-}0.0)$  & Safe, master key \\
+\texttt{exit\_area}    & $(0.0,\;0,\;\phantom{-}8.5)$   & Exit door \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Action Set}
+\label{sec:actions}
+
+Thirteen deterministic actions are defined across two files: five movement
+actions and eight object-interaction actions.  All costs are 1.0 (unit cost).
+
+\subsection{Movement Actions}
+
+\texttt{MoveAction(destination)} is applicable when
+$\texttt{player\_location} \neq \texttt{destination}$ and produces a new state
+with the location updated.  There are five such actions, one per region.
+
+\subsection{Object-Interaction Actions}
+
+\begin{table}[H]
+\centering
+\caption{Object-interaction actions, their preconditions and effects.}
+\label{tab:actions}
+\begin{tabular}{L{3.4cm}L{5.2cm}L{4cm}}
+\toprule
+\textbf{Action} & \textbf{Preconditions} & \textbf{Effects} \\
+\midrule
+\texttt{pick\_up\_small\_key}    & loc=desk, not collected    & collected=True; inv += small\_key \\
+\texttt{unlock\_drawer}          & loc=desk, small\_key, drawer locked  & drawer\_locked=False \\
+\texttt{pick\_up\_cabinet\_key}  & loc=desk, drawer open, not collected & collected=True; inv += cabinet\_key \\
+\texttt{unlock\_cabinet}         & loc=cabinet, cabinet\_key, cabinet locked & cabinet\_locked=False \\
+\texttt{read\_code}              & loc=cabinet, cabinet open, unknown & code\_known=True \\
+\texttt{enter\_code\_safe}       & loc=safe, code known, safe locked  & safe\_locked=False \\
+\texttt{pick\_up\_master\_key}   & loc=safe, safe open, not collected & collected=True; inv += master\_key \\
+\texttt{unlock\_exit}            & loc=exit, master\_key, exit locked & exit\_locked=False \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Goal and Transition Function}
+
+The goal test is:
+\[
+  \text{is\_goal}(s)
+  \;\Leftrightarrow\;
+  s.\texttt{player\_location} = \texttt{exit\_area}
+  \;\land\;
+  \lnot s.\texttt{exit\_locked}
+\]
+
+The transition function $T(s, a) = s'$ is total for applicable actions and
+undefined (the action is simply filtered out) when preconditions are not met.
+
+\section{State-Space Size}
+
+The theoretical maximum number of states is bounded by:
+\[
+  |\mathcal{S}|
+  \;\leq\;
+  \underbrace{5}_{\text{locations}}
+  \;\times\;
+  \underbrace{2^4}_{\substack{\text{drawer, cabinet,}\\\text{safe, exit locked}}}
+  \;\times\;
+  \underbrace{2^3}_{\substack{\text{small\_key, cabinet\_key,}\\\text{master\_key collected}}}
+  \;\times\;
+  \underbrace{2^1}_{\text{code\_known}}
+  = 5 \times 256
+  = 1{,}280
+\]
+Note that the three \texttt{*\_collected} Booleans are redundant with the \texttt{inventory} frozen set (Table~\ref{tab:gamestate}), so the effective dimension is $5 \cdot 2^{\,8} = 1{,}280$.  In practice the reachable state space is far smaller because many variable
+combinations are unreachable from the initial state (for example, one cannot
+hold the master key before the safe is opened).  All four algorithms explore
+the reachable graph without revisiting states, converging well within this
+upper bound.
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 5 — AI ALGORITHMS                                                  ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{AI Algorithms}
+\label{chap:algorithms}
+
+\section{Breadth-First Search}
+\label{sec:bfs}
+
+BFS explores nodes in FIFO order using a double-ended queue (\texttt{deque}).
+We mark nodes as explored at \emph{generation time} --- when they are added to
+the frontier --- which is more efficient than expansion-time marking because it
+avoids inserting the same node into the frontier multiple times.
+
+\begin{lstlisting}[style=pyStyle,
+  caption={BFS implementation (\texttt{ai/algorithms/bfs.py}).},
+  label=lst:bfs]
+from collections import deque
+import time
+from ai.state import GameState
+from ai.actions import get_all_actions
+
+
+def bfs(initial_state: GameState):
+    """Breadth-First Search -- complete & optimal under uniform cost."""
+    t0      = time.perf_counter()
+    actions = get_all_actions()
+
+    frontier  = deque([(initial_state, [])])
+    explored  = {initial_state}          # mark at generation time
+    expanded  = 0
+    max_front = 1
+
+    while frontier:
+        state, plan = frontier.popleft()
+        expanded += 1
+
+        if state.is_goal():
+            return plan, _stats('BFS', expanded, len(plan), t0, max_front)
+
+        for a in actions:
+            if a.is_applicable(state):
+                ns = a.apply(state)
+                if ns not in explored:
+                    explored.add(ns)
+                    frontier.append((ns, plan + [a]))
+                    if len(frontier) > max_front:
+                        max_front = len(frontier)
+
+    return None, _stats('BFS', expanded, 0, t0, max_front)
+\end{lstlisting}
+
+\textbf{Completeness}: BFS is complete for finite branching factors.  Our
+domain has at most 13 applicable actions per state and a finite reachable
+graph, so BFS always terminates.
+
+\textbf{Optimality}: Since all action costs are~1.0, BFS finds the plan with
+the fewest steps first.
+
+\section{Depth-First Search}
+\label{sec:dfs}
+
+DFS uses a LIFO stack.  We generate children in reversed order so that the
+first action in the list is explored first, matching the intuitive ordering.
+
+\begin{lstlisting}[style=pyStyle,
+  caption={DFS implementation (\texttt{ai/algorithms/dfs.py}).},
+  label=lst:dfs]
+import time
+from ai.state import GameState
+from ai.actions import get_all_actions
+
+
+def dfs(initial_state: GameState):
+    """Depth-First Search -- memory efficient, not guaranteed optimal."""
+    t0      = time.perf_counter()
+    actions = get_all_actions()
+
+    frontier  = [(initial_state, [])]
+    visited   = {initial_state}      # mark at generation time (same as BFS)
+    expanded  = 0
+    max_front = 1
+
+    while frontier:
+        state, plan = frontier.pop()
+        expanded += 1
+
+        if state.is_goal():
+            return plan, _stats('DFS', expanded, len(plan), t0, max_front)
+
+        # reversed so first action in list gets explored first
+        for a in reversed(actions):
+            if a.is_applicable(state):
+                ns = a.apply(state)
+                if ns not in visited:
+                    visited.add(ns)
+                    frontier.append((ns, plan + [a]))
+                    if len(frontier) > max_front:
+                        max_front = len(frontier)
+
+    return None, _stats('DFS', expanded, 0, t0, max_front)
+\end{lstlisting}
+
+\textbf{Completeness}: With a visited set preventing revisits, DFS is complete
+for finite state spaces.
+
+\textbf{Optimality}: DFS is not optimal in general; however, because the puzzle
+has a strict linear dependency chain, the first plan DFS finds is often the
+optimal one (Section~\ref{sec:dfsexplain}).
+
+\section{Uniform-Cost Search}
+\label{sec:ucs}
+
+UCS uses a min-heap ordered by accumulated path cost $g(n)$.  Since all action
+costs are~1.0, the heap degenerates to a BFS-order queue.
+
+\begin{lstlisting}[style=pyStyle,
+  caption={UCS implementation (\texttt{ai/algorithms/ucs.py}).},
+  label=lst:ucs]
+import heapq
+import time
+from ai.state import GameState
+from ai.actions import get_all_actions
+
+
+def ucs(initial_state: GameState):
+    """Uniform-Cost Search -- optimal for varying action costs."""
+    t0      = time.perf_counter()
+    actions = get_all_actions()
+
+    counter  = 0
+    frontier = [(0.0, counter, initial_state, [])]
+    seen     = {initial_state}          # mark at generation time
+    expanded = 0
+    max_front = 1
+
+    while frontier:
+        g, _, state, plan = heapq.heappop(frontier)
+        expanded += 1
+
+        if state.is_goal():
+            return plan, _stats('UCS', expanded, len(plan), t0, max_front)
+
+        for a in actions:
+            if a.is_applicable(state):
+                ns = a.apply(state)
+                if ns not in seen:
+                    seen.add(ns)
+                    counter += 1
+                    heapq.heappush(
+                        frontier, (g + a.cost, counter, ns, plan + [a]))
+                    if len(frontier) > max_front:
+                        max_front = len(frontier)
+
+    return None, _stats('UCS', expanded, 0, t0, max_front)
+\end{lstlisting}
+
+\subsection{BFS--UCS Equivalence}
+\label{sec:equivalence}
+
+\begin{theorem}
+When every action cost equals~1.0, BFS and UCS expand identical nodes in the
+same order and produce the same node-expansion count.
+\end{theorem}
+
+\begin{proof}
+Both algorithms mark nodes at generation time.  Since all costs are~1.0, the
+$g$-value of every node equals its depth~$d$.  UCS expands in non-decreasing
+$g$-order; at each depth~$d$ all nodes have the same $g = d$, so tie-breaking
+by insertion order (via the counter) produces FIFO order within each depth ---
+exactly the order BFS uses with its \texttt{deque}.  Because both algorithms
+use a generation-time closed list, the set of nodes inserted into the frontier
+is also identical.  Therefore
+$|\text{expanded}|_{\text{BFS}} = |\text{expanded}|_{\text{UCS}}$.
+\end{proof}
+
+This equivalence is confirmed empirically in Section~\ref{sec:benchresults}.
+
+\section{A$^{\ast}$ Search with Formal Proof}
+\label{sec:astar}
+\label{sec:astar_proof}
+
+\subsection{Heuristic Design}
+
+Our A$^{\ast}$ heuristic counts the number of Boolean prerequisite conditions
+that are not yet satisfied in state $s$:
+
+\begin{align}
+h(s) \;=\;
+  &\mathbb{1}[\lnot s.\texttt{small\_key\_collected}]
+  + \mathbb{1}[s.\texttt{drawer\_locked}] \notag\\
+  &+\mathbb{1}[\lnot s.\texttt{cabinet\_key\_collected}]
+  + \mathbb{1}[s.\texttt{cabinet\_locked}] \notag\\
+  &+\mathbb{1}[\lnot s.\texttt{code\_known}]
+  + \mathbb{1}[s.\texttt{safe\_locked}] \notag\\
+  &+\mathbb{1}[\lnot s.\texttt{master\_key\_collected}]
+  + \mathbb{1}[s.\texttt{exit\_locked}] \notag\\
+  &+\mathbb{1}[s.\texttt{player\_location} \neq \texttt{exit\_area}]
+\end{align}
+
+The maximum value $h(s_0) = 9$ is achieved at the initial state where all
+conditions are unsatisfied.
+
+\begin{lstlisting}[style=pyStyle,
+  caption={A* heuristic and search (\texttt{ai/algorithms/astar.py}).},
+  label=lst:astar]
+import heapq
+import time
+from ai.state import GameState
+from ai.actions import get_all_actions
+
+
+def heuristic(s: GameState) -> int:
+    """
+    Admissible & consistent heuristic.
+    Counts prerequisite conditions still unsatisfied.
+    """
+    h = 0
+    if not s.small_key_collected:   h += 1  # need: pick_up_small_key
+    if s.drawer_locked:             h += 1  # need: unlock_drawer
+    if not s.cabinet_key_collected: h += 1  # need: pick_up_cabinet_key
+    if s.cabinet_locked:            h += 1  # need: unlock_cabinet
+    if not s.code_known:            h += 1  # need: read_code
+    if s.safe_locked:               h += 1  # need: enter_code_safe
+    if not s.master_key_collected:  h += 1  # need: pick_up_master_key
+    if s.exit_locked:               h += 1  # need: unlock_exit
+    if s.player_location != 'exit_area': h += 1  # need: move to exit
+    return h
+
+
+def astar(initial_state: GameState):
+    """A* Search -- optimal with admissible + consistent heuristic."""
+    t0      = time.perf_counter()
+    actions = get_all_actions()
+
+    counter  = 0
+    h0       = heuristic(initial_state)
+    frontier = [(h0, counter, 0.0, initial_state, [])]
+    seen     = {initial_state}          # mark at generation time
+    expanded = 0
+    max_front = 1
+
+    while frontier:
+        f, _, g, state, plan = heapq.heappop(frontier)
+        expanded += 1
+
+        if state.is_goal():
+            return plan, _stats('A*', expanded, len(plan), t0, max_front)
+
+        for a in actions:
+            if a.is_applicable(state):
+                ns = a.apply(state)
+                if ns not in seen:
+                    seen.add(ns)
+                    counter += 1
+                    h = heuristic(ns)
+                    heapq.heappush(
+                        frontier,
+                        (g + a.cost + h, counter, g + a.cost,
+                         ns, plan + [a]))
+                    if len(frontier) > max_front:
+                        max_front = len(frontier)
+
+    return None, _stats('A*', expanded, 0, t0, max_front)
+\end{lstlisting}
+
+\subsection{Proof of Admissibility}
+
+\begin{theorem}[Admissibility]
+The heuristic $h$ defined above is admissible: for every state $s$,
+$h(s) \leq h^*(s)$, where $h^*(s)$ is the true minimum-cost plan length from
+$s$ to the goal.
+\end{theorem}
+
+\begin{proof}
+Each of the nine terms in $h(s)$ corresponds to a distinct prerequisite
+condition that must be resolved before the goal can be reached.  We claim that
+each condition requires at least one distinct action to resolve:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item $\lnot\texttt{small\_key\_collected}$ can only become false via
+        \texttt{pick\_up\_small\_key}.
+  \item $\texttt{drawer\_locked}$ can only become false via
+        \texttt{unlock\_drawer}.
+  \item $\lnot\texttt{cabinet\_key\_collected}$ can only become false via
+        \texttt{pick\_up\_cabinet\_key}.
+  \item $\texttt{cabinet\_locked}$ can only become false via
+        \texttt{unlock\_cabinet}.
+  \item $\lnot\texttt{code\_known}$ can only become false via
+        \texttt{read\_code}.
+  \item $\texttt{safe\_locked}$ can only become false via
+        \texttt{enter\_code\_safe}.
+  \item $\lnot\texttt{master\_key\_collected}$ can only become false via
+        \texttt{pick\_up\_master\_key}.
+  \item $\texttt{exit\_locked}$ can only become false via
+        \texttt{unlock\_exit}.
+  \item $\texttt{player\_location} \neq \texttt{exit\_area}$ requires at least
+        one \texttt{move\_to\_exit\_area} action.
+\end{enumerate}
+
+Crucially, each action affects at most one of these nine conditions, so no
+single action can reduce $h$ by more than~1.  Since every action has cost~1,
+the total cost needed to satisfy all $h(s)$ remaining conditions is at
+least~$h(s)$.  Hence $h(s) \leq h^*(s)$ and $h$ is admissible. \qed
+\end{proof}
+
+\subsection{Proof of Consistency}
+
+\begin{theorem}[Consistency]
+The heuristic $h$ is consistent: for every state $s$ and every action $a$
+applicable in $s$ with successor $s' = T(s,a)$:
+\[
+  h(s) \;\leq\; c(s, a, s') + h(s')
+\]
+where $c(s, a, s') = a.\texttt{cost} = 1$.
+\end{theorem}
+
+\begin{proof}
+Any action $a$ can affect at most one of the nine Boolean terms contributing to
+$h$.  There are two cases:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Productive action}: $a$ resolves exactly one prerequisite
+        condition.  Then $h(s') = h(s) - 1$, and the inequality becomes
+        $h(s) \leq 1 + h(s) - 1 = h(s)$, which holds with equality.
+  \item \textbf{Non-productive action} (e.g.\ a move action that does not
+        reach the exit area): $h(s') = h(s)$, and the inequality becomes
+        $h(s) \leq 1 + h(s)$, which holds strictly.
+\end{itemize}
+
+In no case does any single action decrease $h$ by more than~1, so
+$h(s) \leq 1 + h(s')$ always holds. \qed
+\end{proof}
+
+\begin{corollary}
+A$^{\ast}$ with the heuristic $h$ and a generation-time closed list is complete
+and cost-optimal.
+\end{corollary}
+
+\begin{proof}
+Admissibility guarantees that A$^{\ast}$ never prunes the optimal solution
+path; consistency guarantees that the first time A$^{\ast}$ reaches a node via
+its optimal cost, it need never revisit it.  Together these properties give the
+standard A$^{\ast}$ optimality result~\cite{hart1968formal,russell2020ai}.
+\qed
+\end{proof}
+
+\section{Genetic Algorithm for Puzzle Generation}
+\label{sec:ga}
+
+\subsection{Representation}
+
+A \textit{chromosome} is a list of \textit{gene dictionaries}, each of the
+form:
+\[
+  g_i
+  = \{\;\texttt{item\_area}: a_i,\;\; \texttt{lock\_area}: b_i\;\}
+\]
+where $a_i,\, b_i$ are drawn from
+$\{\texttt{desk\_area},\; \texttt{cabinet\_area},\; \texttt{safe\_area}\}$
+(\texttt{PLAY\_AREAS}).  The last gene is constrained so that
+$\texttt{lock\_area} = \texttt{exit\_area}$, encoding the invariant that the
+final obstacle is always the exit door.
+
+A chromosome of length~$n$ encodes a linear $n$-stage puzzle: to reach stage
+$i{+}1$'s item, the player must first open stage~$i$'s lock.  The GA converts
+chromosomes to \texttt{PuzzleConfig} objects (Section~\ref{sec:dynstate}) for
+evaluation.
+
+\subsection{Fitness Function}
+
+\begin{lstlisting}[style=pyStyle,
+  caption={GA fitness function (\texttt{ai/genetic.py}).},
+  label=lst:gafitness]
+def _fitness(self, chrom: Chromosome) -> Tuple[float, PuzzleConfig]:
+    """
+    Evaluate a chromosome.
+
+    Scoring breakdown (max ~122 with 6-stage chains via mutation):
+      20  -- base solvable bonus
+      50  -- full marks if plan_length in [target_min, target_max]
+      28  -- area diversity (up to 4 distinct areas * 7)
+      24  -- puzzle depth (up to 6 stages * 4)
+    """
+    config = self._to_config(chrom)
+    plan_len, nodes, ok = solve_dynamic(config)
+
+    config.plan_length    = plan_len
+    config.nodes_expanded = nodes
+    config.solvable       = ok
+
+    if not ok:
+        config.fitness = 0.0
+        return 0.0, config
+
+    # Length score
+    lo, hi = self.target_min, self.target_max
+    if lo <= plan_len <= hi:
+        length_score = 50.0
+    elif plan_len < lo:
+        length_score = max(0.0, 50.0 - (lo - plan_len) * 8.0)
+    else:
+        length_score = max(0.0, 50.0 - (plan_len - hi)  * 5.0)
+
+    # Diversity: distinct areas used across all stages
+    all_areas    = ({g['item_area'] for g in chrom}
+                   | {g['lock_area'] for g in chrom})
+    diversity    = len(all_areas) * 7.0   # up to 28 (4 distinct areas)
+
+    # Depth: longer chains = richer puzzle
+    depth_score  = len(chrom) * 4.0       # 4 per stage
+
+    total = 20.0 + length_score + diversity + depth_score
+    config.fitness = round(total, 2)
+    return total, config
+\end{lstlisting}
+
+The fitness weights were chosen to reflect the relative importance of each quality criterion.  The solvability bonus (20 points) acts as a hard gate: without it, an unsolvable puzzle scores zero.  Plan length receives the largest weight (50 points) because difficulty calibration is the GA's primary objective.  Area diversity (7 points per distinct area, up to 28) encourages spatial variety so that the player must traverse the room rather than staying in one zone.  Puzzle depth (4 points per stage) rewards longer chains without dominating the length score.  These weights were tuned experimentally to produce consistently solvable puzzles within the target difficulty range across all three levels.
+
+The theoretical maximum fitness for an initial 5-stage chromosome that lands
+squarely in the target range and uses all four areas is:
+\[
+  20 + 50 + 28 + 20 = 118
+\]
+However, the mutation operator can insert extra stages, pushing chromosomes to
+6 or even~7 stages.  A 6-stage chromosome contributes $6 \times 4 = 24$ to the
+depth score, yielding:
+\[
+  20 + 50 + 28 + 24 = 122
+\]
+and a 7-stage chromosome gives up to $20 + 50 + 28 + 28 = 126$.  We observed
+fitness values in the range 122--126 during testing, which is expected and
+correct behaviour (see Section~\ref{sec:fitness_max}).
+
+\subsection{Genetic Operators}
+\label{sec:gaoperators}
+
+\textbf{Initialisation}: Population size is 20.  Each individual is a random
+chromosome of length 2--3 (easy), 3--4 (medium), or 4--5 (hard) stages.
+
+\textbf{Selection}: Tournament selection with $k = 3$ samples three random
+individuals and returns the fittest.
+
+\textbf{Crossover}: Single-point crossover at probability $p_c = 0.75$.
+Parent chromosomes are cut at random positions and recombined; the invariant
+$\texttt{last.lock\_area} = \texttt{exit\_area}$ is re-asserted on the child.
+
+\textbf{Mutation}: Applied per gene at probability $p_m = 0.30$:
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{item\_area} replaced with a random play area.
+  \item \texttt{lock\_area} (non-last genes) replaced with a random play area.
+  \item With 15\% probability, a new random stage is inserted (if length $< 5$; crossover can independently produce longer chromosomes by concatenating parts of two unequal-length parents, which is how 6--7 stage individuals arise).
+  \item With 15\% probability, a random non-last stage is deleted (if
+        length $> 2$).
+\end{itemize}
+
+\textbf{Elitism}: The two best individuals (\texttt{ELITISM = 2}) are copied
+unchanged into the next generation.
+
+\begin{table}[H]
+\centering
+\caption{Genetic Algorithm hyperparameters.}
+\label{tab:gaparams}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Symbol} & \textbf{Value} \\
+\midrule
+Population size               & $N$     & 20   \\
+Generations                   & $G$     & 40   \\
+Crossover probability         & $p_c$   & 0.75 \\
+Mutation probability per gene & $p_m$   & 0.30 \\
+Stage insertion / deletion    & ---     & 0.15 each \\
+Elitism                       & ---     & 2    \\
+Tournament size               & $k$     & 3    \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{DynState: Generic State for GA Puzzles}
+\label{sec:dynstate}
+
+Because GA chromosomes describe arbitrary item/lock chains, we cannot use the
+fixed \texttt{GameState} (which hardcodes the escape-room sequence).  Instead
+we define a lightweight generic state \texttt{DynState}:
+
+\begin{lstlisting}[style=pyStyle,
+  caption={\texttt{DynState} class used by the dynamic solver
+           (\texttt{ai/dynamic\_solver.py}).},
+  label=lst:dynstate]
+@dataclass(frozen=True)
+class DynState:
+    location:  str
+    collected: FrozenSet[str]   # item names collected so far
+    unlocked:  FrozenSet[str]   # lock names opened so far
+
+    @staticmethod
+    def initial() -> DynState:
+        return DynState('start_area', frozenset(), frozenset())
+
+    def is_goal(self) -> bool:
+        return 'exit' in self.unlocked and self.location == 'exit_area'
+\end{lstlisting}
+
+Actions (\texttt{\_Move}, \texttt{\_Pickup}, \texttt{\_Unlock}) are constructed
+dynamically from the \texttt{PuzzleConfig} and use \texttt{\_\_slots\_\_} for
+speed.  The generalised heuristic counts remaining uncollected items, unopened
+locks, and whether the player is at the exit:
+
+\[
+  h(\text{DynState}, \text{config})
+  =
+  \sum_{s \,\in\, \text{stages}}
+  \Bigl(
+    \mathbb{1}[s.\text{item} \notin \texttt{collected}]
+    + \mathbb{1}[s.\text{lock} \notin \texttt{unlocked}]
+  \Bigr)
+  + \mathbb{1}[\texttt{location} \neq \texttt{exit\_area}]
+\]
+
+This heuristic satisfies the same admissibility and consistency conditions as
+the fixed heuristic; the proof is structurally identical.
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 6 — IMPLEMENTATION DETAILS                                         ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{Implementation Details}
+\label{chap:implementation}
+
+\section{Project File Structure}
+
+The project is organised as shown below.  Python modules reside under
+\texttt{ai/} (with algorithm implementations in the \texttt{ai/algorithms/} sub-package); all front-end files reside under \texttt{static/}.
+
+\begin{verbatim}
+escape_room_ai/
++-- server.py                  Flask application entry point
++-- requirements.txt           Python dependencies (flask)
++-- ai/
+|   +-- __init__.py
+|   +-- state.py               GameState frozen dataclass
+|   +-- actions.py             Action hierarchy (13 actions)
+|   +-- puzzle_config.py       PuzzleConfig, Stage dataclasses
+|   +-- dynamic_solver.py      DynState, generic A*/BFS/DFS/UCS
+|   +-- genetic.py             PuzzleGA class
+|   +-- algorithms/
+|       +-- __init__.py        ALGORITHMS dispatch dict
+|       +-- bfs.py
+|       +-- dfs.py
+|       +-- ucs.py
+|       +-- astar.py
++-- static/
+    +-- index.html             Single-page application shell
+    +-- style.css              HUD and overlay styles
+    +-- game.js                Three.js game (~1700 lines)
+\end{verbatim}
+
+\section{REST API}
+
+Three endpoints handle all client--server communication.
+
+\subsection{\texttt{POST /api/solve}}
+
+Request body: \texttt{\{"algorithm": "BFS"|"DFS"|"UCS"|"A*"\}}
+
+The algorithm is looked up in the \texttt{ALGORITHMS} dispatch dictionary
+(defined in \texttt{ai/algorithms/\_\_init\_\_.py}), which maps name strings
+to the corresponding Python functions.  Response example:
+
+\begin{verbatim}
+{
+  "plan":  ["move_to_desk_area", "pick_up_small_key", ...],
+  "stats": {
+    "algorithm":      "A*",
+    "nodes_expanded": 62,
+    "plan_length":    20,
+    "time_ms":        0.29,
+    "max_frontier":   5
+  }
+}
+\end{verbatim}
+
+\subsection{\texttt{POST /api/generate}}
+
+Request body: \texttt{\{"difficulty": "easy"|"medium"|"hard"\}}
+
+Response includes the full \texttt{PuzzleConfig} (stage list, plan length,
+nodes expanded, fitness, generation found) and a GA statistics block (best
+fitness, fitness history array, elapsed time in ms).
+
+\subsection{\texttt{POST /api/solve\_ga}}
+
+Request body: \texttt{\{"puzzle": \{...\}, "algorithm": "BFS"|"DFS"|"UCS"|"A*"\}}
+
+The \texttt{puzzle} field is de-serialised into a list of \texttt{Stage}
+objects, a \texttt{PuzzleConfig} is constructed, and the chosen classical
+algorithm from \texttt{dynamic\_solver.py} is invoked.
+
+\section{Hiding Spots}
+\label{sec:hidingspots}
+
+Each difficulty level randomises which of ten hiding spots conceals the small
+key.  Spots are catalogued in a JavaScript object \texttt{HIDING\_SPOTS} keyed
+by area name.  Each entry provides:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{make()}: a factory returning a Three.js mesh.
+  \item \texttt{keyPos}: the position the key mesh occupies while hidden.
+  \item \texttt{openAnim(mesh, t)}: a parametric animation function where
+        $t \in [0,1]$.
+\end{itemize}
+
+The ten spots across four areas are: \textit{Desk Drawer}, \textit{Stack of
+Papers}, \textit{Old Book} (desk area); \textit{Cabinet Door}, \textit{Side-Table
+Vase}, \textit{Books on Shelf} (cabinet area); \textit{Safe Door},
+\textit{Side Painting}, \textit{Corner Rug} (safe area); \textit{Doormat}
+(exit area).
+
+\section{Lock Fixtures}
+\label{sec:lockfixtures}
+
+Four visual lock fixtures appear in the room and animate when the corresponding
+action is executed:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Desk area} (\textit{Drawer Padlock}): a golden box that rotates
+        and rises on \texttt{unlock\_drawer}.
+  \item \textbf{Cabinet area} (\textit{Cabinet Keyhole}): a golden box that
+        rotates $\pi$ radians on \texttt{unlock\_cabinet}.
+  \item \textbf{Safe area} (\textit{Safe Dial}): a golden cylinder created with
+        \texttt{CylinderGeometry} that spins 2.5 full turns on
+        \texttt{enter\_code\_safe}.
+  \item \textbf{Exit area} (\textit{Exit Door}): the full door box sweeps open,
+        changing colour from red to green as $t \to 1$.
+\end{itemize}
+
+\section{Custom Animation System}
+\label{sec:animations}
+
+We built a lightweight declarative animation system rather than importing a
+full tweening library.  The system maintains a list \texttt{\_anims} of active
+animation records.
+
+\begin{lstlisting}[style=jsStyle,
+  caption={Animation system (\texttt{static/game.js}).},
+  label=lst:anim]
+const _anims = [];
+
+function pushAnim(mesh, duration, update, onDone) {
+  _anims.push({ mesh, duration, elapsed: 0, update, onDone });
+}
+
+function stepAnims(delta) {
+  for (let i = _anims.length - 1; i >= 0; i--) {
+    const a = _anims[i];
+    a.elapsed += delta;
+    const t = Math.min(1, a.elapsed / a.duration);
+    a.update(a.mesh, t);   // caller-supplied motion function
+    if (t >= 1) {
+      if (a.onDone) a.onDone();
+      _anims.splice(i, 1);
+    }
+  }
+}
+\end{lstlisting}
+
+Each call to \texttt{pushAnim} registers a record with a mesh reference, a
+total duration in seconds, an update function \texttt{(mesh, t)} where $t$ is
+the normalised progress, and an optional completion callback.
+\texttt{stepAnims(delta)} is called every frame in the render loop with the
+frame delta time.  Iterating backwards prevents index-shifting bugs when
+multiple animations complete in the same frame.
+
+\section{Collision Detection}
+\label{sec:collision}
+
+Player movement is constrained by Axis-Aligned Bounding Box (AABB) tests
+implemented in the \texttt{blocked(x, z)} function.  We check nine rectangular
+exclusion zones corresponding to the physical room boundary and major furniture:
+
+\begin{lstlisting}[style=jsStyle,
+  caption={AABB collision detection (\texttt{static/game.js}).},
+  label=lst:collision]
+function blocked(x, z) {
+  // Room boundary walls
+  if (x < -9.3 || x > 9.3)                           return true;
+  if (z < -9.5)                                       return true;
+  if (z > 9.5 && (x < -1.4 || x > 1.4))             return true; // doorway gap
+  if (z > 10.2)                                       return true; // beyond exit
+  // Furniture AABB exclusion zones
+  if (x > -2.3 && x < 2.3 && z > -7.4 && z < -4.6)  return true; // desk
+  if (x > 7.45 && z > 1.6  && z < 4.4)               return true; // cabinet
+  if (x < -7.45 && z > -1.2 && z < 1.2)              return true; // safe
+  if (x > -4.55 && x < -1.45 && z > 4.85 && z < 6.45) return true; // sofa
+  if (x > 7.55 && z > -4.55 && z < -3.45)            return true; // filing cabinet
+  return false;
+}
+\end{lstlisting}
+
+The function is called separately for the $x$ and $z$ components of the
+velocity vector, allowing the player to slide along wall surfaces when moving
+diagonally into a corner.
+
+\section{Session ID Race Condition Guard}
+\label{sec:sessionguard}
+
+When the user presses \texttt{Tab} to start the AI and then immediately presses
+\texttt{R} to reset, a stale fetch response might arrive after the reset and
+attempt to replay actions on a cleared scene.  We guard against this with an
+incrementing session counter:
+
+\begin{lstlisting}[style=jsStyle,
+  caption={Session ID guard (\texttt{static/game.js}).},
+  label=lst:session]
+let aiSessionId = 0;   // incremented on every reset
+
+async function startAIMode() {
+  const mySession = aiSessionId;     // snapshot current session
+  // ... fetch and await response ...
+  // Abort if user pressed R while fetch was in flight
+  if (mySession !== aiSessionId || gameMode !== 'ai') return;
+  await executePlan(data.plan, mySession);
+}
+
+// Inside executePlan, checked before EVERY step:
+async function executePlan(plan, mySession) {
+  for (const actionName of plan) {
+    if (mySession !== aiSessionId) return;  // stale -- bail out
+    applyAction(actionName);
+    await delay(STEP_DELAY_MS);
+  }
+}
+\end{lstlisting}
+
+Pressing \texttt{R} calls \texttt{resetGame()}, which increments
+\texttt{aiSessionId}.  Any pending \texttt{await} in the old
+\texttt{startAIMode} invocation detects the mismatch at the next check and
+silently returns without modifying the scene.
+
+\section{AUD Logo Canvas Texture}
+\label{sec:audlogo}
+
+\begin{lstlisting}[style=jsStyle,
+  caption={Procedural AUD logo canvas texture (\texttt{static/game.js}).},
+  label=lst:audlogo]
+const cvs = document.createElement('canvas');
+cvs.width = 480; cvs.height = 220;
+const ctx = cvs.getContext('2d');
+
+// White background
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, 480, 220);
+
+// Large AUD wordmark
+ctx.fillStyle = '#1a3580';
+ctx.font = 'bold 92px Georgia, serif';
+ctx.textBaseline = 'middle';
+ctx.fillText('AUD', 16, 110);
+
+// Double vertical divider rule
+ctx.strokeStyle = '#1a3580'; ctx.lineWidth = 4;
+ctx.beginPath(); ctx.moveTo(190, 22); ctx.lineTo(190, 198); ctx.stroke();
+ctx.beginPath(); ctx.moveTo(200, 22); ctx.lineTo(200, 198); ctx.stroke();
+
+// Institution name block
+ctx.font = 'bold 30px Arial, sans-serif';
+ctx.fillText('AMERICAN',   218, 78);
+ctx.fillText('UNIVERSITY', 218, 112);
+ctx.fillText('IN DUBAI',   218, 148);
+
+// Map onto a Three.js mesh
+const audMat = new THREE.MeshStandardMaterial({
+  map: new THREE.CanvasTexture(cvs), roughness: 0.45,
+});
+const audMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(2.1, 0.92, 0.04), audMat);
+audMesh.position.set(3.6, 2.4, -9.78);
+scene.add(audMesh);
+\end{lstlisting}
+
+\section{Code Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Source code statistics by file.}
+\label{tab:codestats}
+\begin{tabular}{lrr}
+\toprule
+\textbf{File} & \textbf{Approx.\ Lines} & \textbf{Language} \\
+\midrule
+\texttt{static/game.js}        & 1,700 & JavaScript \\
+\texttt{ai/dynamic\_solver.py} &   299 & Python     \\
+\texttt{ai/genetic.py}         &   248 & Python     \\
+\texttt{ai/actions.py}         &   161 & Python     \\
+\texttt{ai/algorithms/*.py}    &   184 & Python     \\
+\texttt{server.py}             &   104 & Python     \\
+\texttt{ai/state.py}           &    49 & Python     \\
+\texttt{ai/puzzle\_config.py}  &    69 & Python     \\
+\texttt{static/index.html}     &   128 & HTML       \\
+\texttt{static/style.css}      &   160 & CSS        \\
+\midrule
+\textbf{Total}                 & \textbf{3,102} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 7 — EXPERIMENTAL EVALUATION                                        ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{Experimental Evaluation}
+\label{chap:evaluation}
+
+\section{Experimental Setup}
+
+All benchmarks were conducted on the fixed escape-room puzzle (the standard
+ten-variable \texttt{GameState}).  We chose the \textit{hard} difficulty
+because it provides the longest optimal plan (19--20 steps) and thus the most
+meaningful discrimination between algorithms.
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Hardware}: Huawei laptop, Intel Core Ultra~5, Intel Arc Graphics, 16~GB RAM.
+  \item \textbf{Software}: Python~3.11, Flask~3.x, Three.js r160, Chrome 124.
+  \item \textbf{Runs}: Three independent benchmark runs triggered from the
+        browser's \textit{Benchmark All~4} button.
+  \item \textbf{Primary metric}: nodes expanded (deterministic and
+        reproducible).
+  \item \textbf{Secondary metrics}: plan length, wall-clock time.
+  \item \textbf{Validation}: 15 automated test calls to each endpoint; all
+        returned valid plans without errors.
+\end{itemize}
+
+\textbf{Note on timing}: All algorithms complete in sub-millisecond time (well
+under 1~ms).  At this scale, timing measurements are dominated by Python
+interpreter and OS scheduling noise rather than by algorithmic differences.
+We therefore report timing only for completeness and do not draw conclusions
+from timing comparisons.
+
+\section{Benchmark Results}
+\label{sec:benchresults}
+
+\begin{table}[H]
+\centering
+\caption{Benchmark results --- hard difficulty, 3 independent runs. Nodes
+expanded and plan length are deterministic and identical across all runs.
+Timing values reflect sub-ms noise.}
+\label{tab:benchmark}
+\begin{tabular}{@{}lccr@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Nodes Expanded} & \textbf{Plan Length} & \textbf{Time (ms)} \\
+\midrule
+\multicolumn{4}{@{}l}{\small\textit{Run 1 (7 stages, GA fitness 126, gen found 31)}} \\
+BFS  & 71 & 19 & 0.29 \\
+DFS  & 28 & 19 & 0.12 \\
+UCS  & 71 & 19 & 0.28 \\
+A{*} & 62 & 19 & 0.29 \\[4pt]
+\multicolumn{4}{@{}l}{\small\textit{Run 2 (7 stages, GA fitness 126, gen found 22)}} \\
+BFS  & 71 & 20 & 0.28 \\
+DFS  & 30 & 20 & 0.13 \\
+UCS  & 71 & 20 & 0.27 \\
+A{*} & 68 & 20 & 0.30 \\[4pt]
+\multicolumn{4}{@{}l}{\small\textit{Run 3 (7 stages, GA fitness 126, gen found 17)}} \\
+BFS  & 71 & 20 & 0.28 \\
+DFS  & 29 & 20 & 0.13 \\
+UCS  & 71 & 20 & 0.28 \\
+A{*} & 62 & 20 & 0.28 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+To complement the hard-difficulty data, we also benchmarked a single GA-generated puzzle at each of the two remaining difficulty levels.  Since node counts are deterministic for a given puzzle, a single run suffices to capture the expansion counts; only timing would benefit from repetition.  Tables~\ref{tab:bench_easy} and~\ref{tab:bench_medium} show these results.
+
+\begin{table}[H]
+\centering
+\caption{Benchmark results --- easy difficulty (3 stages, GA fitness 110, plan length 10).}
+\label{tab:bench_easy}
+\begin{tabular}{@{}lccr@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Nodes Expanded} & \textbf{Plan Length} & \textbf{Time (ms)} \\
+\midrule
+BFS  & 31 & 10 & 0.27 \\
+DFS  & 16 & 10 & 0.19 \\
+UCS  & 31 & 10 & 0.27 \\
+A{*} & 25 & 10 & 0.33 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Benchmark results --- medium difficulty (5 stages, GA fitness 118, plan length 14).}
+\label{tab:bench_medium}
+\begin{tabular}{@{}lccr@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Nodes Expanded} & \textbf{Plan Length} & \textbf{Time (ms)} \\
+\midrule
+BFS  & 51 & 14 & 0.51 \\
+DFS  & 20 & 14 & 0.42 \\
+UCS  & 51 & 14 & 0.83 \\
+A{*} & 48 & 14 & 0.59 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\textwidth]{screenshot_bench_easy.png}
+  \caption{Benchmark panel at easy difficulty (3 stages, fitness 110, plan length 10).}
+  \label{fig:bench_easy}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\textwidth]{screenshot_bench_medium.png}
+  \caption{Benchmark panel at medium difficulty (5 stages, fitness 118, plan length 14).}
+  \label{fig:bench_medium}
+\end{figure}
+
+A clear pattern emerges across all three difficulty levels.  As puzzle complexity grows from easy (3 stages, plan length~10) through medium (5 stages, plan length~14) to hard (7 stages, plan length~19--20), the total nodes expanded by BFS/UCS scales roughly linearly: 31, 51, 71.  DFS consistently expands the fewest nodes (16, 20, 28--30) because every GA puzzle shares the same linear dependency structure that DFS exploits.  A$^{\ast}$'s advantage over BFS/UCS is modest at all levels --- roughly 6 fewer nodes at easy, 3 at medium, and 3--9 at hard --- confirming that the heuristic provides diminishing returns when the branching factor is low and the dependency chain is strictly linear.
+
+\section{Analysis of Results}
+
+\subsection{BFS and UCS Equivalence}
+
+As predicted by Theorem~5.1, BFS and UCS expand exactly the same 71 nodes
+across all three runs.  Since all action costs are~1.0, both algorithms
+progress through depth levels identically.  This confirms the correctness of
+both implementations.
+
+\subsection{A$^{\ast}$ Efficiency}
+
+At hard difficulty, A$^{\ast}$ expands 62--68 nodes versus 71 for BFS/UCS --- a reduction of
+approximately 7--13\%.  Across all three difficulty levels the savings range from 4\% (medium: 48 vs.\ 51) to 19\% (easy: 25 vs.\ 31), with a mean of approximately 10\%.  The heuristic guides the search away from exploratory moves
+that would not progress toward the goal.  The nodes that BFS/UCS expand but
+A$^{\ast}$ does not are states where the player moves to regions that are not
+yet productive (for example, moving to the safe area before knowing the code
+would require the code-reading step first, so the heuristic correctly deprioritises
+such states).
+
+\subsection{DFS Node Count}
+\label{sec:dfsexplain}
+
+DFS expands only 28--30 nodes --- considerably \emph{fewer} than BFS/UCS (71) and even
+fewer than A$^{\ast}$ (62--68).  This may seem surprising, because DFS is not
+optimal in general and textbook analysis suggests it should explore more states
+than informed search.  The explanation lies in the \emph{linear dependency chain}
+structure of the escape-room puzzle:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item At any state, the number of applicable \emph{productive} actions is
+        0 or~1 (the single action whose preconditions are currently met).
+        The remaining applicable actions are all move actions.
+  \item DFS's LIFO ordering tends to extend the current partial plan with
+        the most recently discovered state, which is often the productive successor.
+        The agent effectively ``falls into'' the dependency chain and follows
+        it to the goal with minimal backtracking.
+\end{enumerate}
+
+Crucially, DFS finds the \emph{same optimal plan length} (19--20 steps) in all runs.
+This is because the puzzle has a strict linear dependency chain with essentially
+one correct path.  We were unable to construct a counterexample within the current system because the GA's chromosome representation enforces a strictly linear item--lock chain with no branching or decoy items.  On a richer puzzle with decoy keys, optional items, or multiple solution paths, DFS would be expected to revert to its worst-case behaviour --- exploring exponentially more nodes and potentially returning suboptimal plans.  Empirically demonstrating this degradation would require extending the puzzle representation to support branching dependencies, which we leave to future work.
+
+\subsection{Plan Quality}
+
+All four algorithms return plans of the same length within each run (19 or 20 steps
+depending on the GA-evolved puzzle), confirming that BFS, UCS, and A$^{\ast}$ are
+all optimal.  DFS is ``accidentally'' optimal here due to the linear chain structure.
+A typical plan proceeds as follows (area transitions abbreviated):
+
+\begin{enumerate}[leftmargin=1.5em,label=\arabic*.]
+  \item \texttt{move\_to\_desk\_area}
+  \item \texttt{pick\_up\_small\_key}
+  \item \texttt{unlock\_drawer}
+  \item \texttt{pick\_up\_cabinet\_key}
+  \item \texttt{move\_to\_cabinet\_area}
+  \item \texttt{unlock\_cabinet}
+  \item \texttt{read\_code}
+  \item \texttt{move\_to\_safe\_area}
+  \item \texttt{enter\_code\_safe}
+  \item \texttt{pick\_up\_master\_key}
+  \item \texttt{move\_to\_exit\_area}
+  \item \texttt{unlock\_exit}
+  \item[] \textit{(The above shows the fixed 4-stage puzzle.  A GA-evolved hard
+  puzzle adds 3 extra stages --- each contributing a pickup, an unlock, and a
+  move-to-area transition --- bringing the total to 19--20 actions.)}
+\end{enumerate}
+
+\section{GA Evaluation}
+
+We ran the GA at hard difficulty (target plan length 14--20 steps) 15 times and recorded the champion fitness, generation at which the champion was first found, and the number of stages in the champion chromosome.  Table~\ref{tab:ga15runs} summarises the results across all 15 runs.
+
+\begin{table}[H]
+\centering
+\caption{GA convergence statistics across 15 independent hard-difficulty runs.}
+\label{tab:ga15runs}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Metric} & \textbf{Mean} & \textbf{Std Dev} & \textbf{Min} & \textbf{Max} \\
+\midrule
+Best fitness          & 126.0 & 0.0  & 126 & 126 \\
+Generation found      & 18.3  & 9.9  & 7   & 37  \\
+Champion stages       & 7.0   & 0.0  & 7   & 7   \\
+Solvable              & \multicolumn{4}{c}{15/15 (100\%)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Every single run converged to the maximum achievable fitness of 126 (corresponding to a 7-stage chromosome with full area diversity and plan length within the target window).  The generation at which the champion was first found varied from as early as generation~7 to as late as generation~37, with a mean of~18.3 and standard deviation of~9.9.  This variation is expected given the stochastic nature of the GA's crossover and mutation operators.  Importantly, all 15 runs produced a solvable champion (100\% success rate), confirming that the fitness function's hard constraint (fitness~= 0 for unsolvable puzzles) reliably filters out invalid configurations.  The fitness histories showed monotonically non-decreasing best-fitness curves due to elitism, and generated plan lengths consistently fell within the 14--20 target range.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=10cm, height=6cm,
+  xlabel={Generation},
+  ylabel={Best Fitness},
+  ymin=115, ymax=130,
+  xmin=1, xmax=40,
+  grid=major,
+  grid style={dotted, gray!50},
+  legend pos=south east,
+  cycle list name=color list,
+]
+\addplot+[thick] coordinates {
+  (1,118)(2,122)(3,122)(4,122)(5,122)(6,122)(7,122)(8,122)(9,122)(10,122)(11,122)(12,122)(13,122)(14,122)(15,122)(16,122)(17,122)(18,122)(19,122)(20,122)(21,122)(22,122)(23,122)(24,122)(25,122)(26,122)(27,122)(28,122)(29,122)(30,122)(31,122)(32,122)(33,122)(34,126)(35,126)(36,126)(37,126)(38,126)(39,126)(40,126)
+};
+\addlegendentry{Run 1 (gen 34)}
+\addplot+[thick, dashed] coordinates {
+  (1,118)(2,118)(3,122)(4,122)(5,122)(6,122)(7,122)(8,122)(9,122)(10,122)(11,122)(12,126)(13,126)(14,126)(15,126)(16,126)(17,126)(18,126)(19,126)(20,126)(21,126)(22,126)(23,126)(24,126)(25,126)(26,126)(27,126)(28,126)(29,126)(30,126)(31,126)(32,126)(33,126)(34,126)(35,126)(36,126)(37,126)(38,126)(39,126)(40,126)
+};
+\addlegendentry{Run 2 (gen 12)}
+\addplot+[thick, dotted] coordinates {
+  (1,118)(2,118)(3,122)(4,122)(5,122)(6,122)(7,122)(8,122)(9,122)(10,122)(11,122)(12,122)(13,122)(14,126)(15,126)(16,126)(17,126)(18,126)(19,126)(20,126)(21,126)(22,126)(23,126)(24,126)(25,126)(26,126)(27,126)(28,126)(29,126)(30,126)(31,126)(32,126)(33,126)(34,126)(35,126)(36,126)(37,126)(38,126)(39,126)(40,126)
+};
+\addlegendentry{Run 3 (gen 14)}
+\end{axis}
+\end{tikzpicture}
+\caption{GA fitness convergence over 40 generations (hard difficulty, 3 of 15 runs).
+         All three start at 118, jump to 122 within 2--3 generations, and reach the maximum
+         of 126 between generations 12 and 34.}
+\label{fig:ga_fitness}
+\end{figure}
+
+\section{Problems Encountered and Solutions}
+
+This section documents every significant challenge we encountered during the
+project, the root cause we diagnosed, and the fix we applied.  We include this
+section to provide an honest account of the engineering process; debugging and
+root-cause analysis are as important as initial design.
+
+\subsection{GA Fitness Maximum Exceeds~118}
+\label{sec:fitness_max}
+
+\textbf{Observation}: During testing we noticed that the GA's best fitness
+values were occasionally 122, 124, or even~126, whereas a naive calculation of
+the scoring formula for a 5-stage chromosome gave a ceiling of
+$20 + 50 + 28 + 20 = 118$.
+
+\textbf{Root cause}: The mutation operator includes a ``stage insertion'' step:
+with 15\% probability, a new gene is inserted into the chromosome (subject to a
+mutation-side cap of~5).  However, single-point crossover has no length cap: it
+concatenates a prefix of one parent with a suffix of another, so two 5-stage parents
+can produce a 7- or 8-stage child.  A chromosome that grows to 6~stages
+contributes $6 \times 4 = 24$ to the depth component (instead of
+$5 \times 4 = 20$), raising the ceiling to
+$20 + 50 + 28 + 24 = 122$.  A 7-stage chromosome pushes it to~126.
+
+\textbf{Resolution}: We updated the \texttt{\_fitness} docstring to read ``max
+$\approx$~122'' and added a comment explaining that mutations can extend
+chromosomes beyond the initial range.  The fitness formula itself is correct;
+only our initial documentation was inaccurate.  No code change was needed.
+
+\subsection{Benchmark Frontier Column Removed}
+
+\textbf{Observation}: An earlier version of the benchmark table included a
+\textit{Max Frontier} column.  The values were BFS~= 5 versus DFS~= 43, which
+appeared counter-intuitive: BFS is stereotypically \emph{worse} on frontier
+size than DFS, yet here BFS showed a smaller number.
+
+\textbf{Root cause}: Both algorithms use a \emph{generation-time} closed list
+(nodes are marked explored when first generated, not when first expanded).
+This is the correct graph-search implementation, but it means the frontier
+never contains nodes that have already been seen.  In a linear dependency chain
+where the optimal path is short and the branching factor is low, BFS's frontier
+stays narrow because most children are immediately recognised as already-seen
+and discarded.  DFS's frontier grows larger because it may explore many
+non-productive branches before backtracking, accumulating un-explored states.
+
+The ``BFS frontier = 5'' figure is numerically correct but counter-intuitive
+without this explanation, and we were concerned it would distract from the more
+meaningful nodes-expanded metric.
+
+\textbf{Resolution}: We removed the Max Frontier column from the browser
+benchmark table and from the LaTeX benchmark table
+(Table~\ref{tab:benchmark}).  The column is still computed and stored in the
+\texttt{stats} dictionary for potential debugging, but it is not displayed to
+the user.
+
+\subsection{Time Column Colouring Removed}
+
+\textbf{Observation}: An early UI version colour-coded the time column in the
+benchmark table (green = fastest, red = slowest).  This gave a misleading
+impression that DFS was ``better'' than BFS because its wall-clock time was
+slightly lower in some runs.
+
+\textbf{Root cause}: At sub-millisecond execution times, the measurements are
+dominated by Python's interpreter overhead, garbage collection, and OS
+scheduling jitter rather than by the algorithmic complexity of the searches.
+Any apparent ordering of timing values across algorithms is noise.
+
+\textbf{Resolution}: We removed the colour-coding from the browser-side
+benchmark table renderer and added a footnote in the UI explaining that all
+algorithms complete in $<1$~ms and that timing differences are not
+statistically meaningful at this scale.  The LaTeX benchmark table
+(Table~\ref{tab:benchmark}) presents raw times without colour for the same
+reason.
+
+\subsection{Explored Marking Inconsistency Fixed}
+
+\textbf{Observation}: During early testing, A$^{\ast}$ occasionally expanded
+more nodes than BFS on the same puzzle, which contradicted our expectation that
+the heuristic would prune the search.
+
+\textbf{Root cause}: The original A$^{\ast}$ implementation used an
+\emph{expansion-time} closed list (marking a node as explored only when it is
+popped from the heap).  BFS and DFS used a \emph{generation-time} closed list
+(marking when a node is added to the frontier).  This asymmetry meant
+A$^{\ast}$ could re-insert duplicate states into the heap and expand them
+multiple times.
+
+\textbf{Resolution}: We standardised all four algorithms to use
+generation-time marking.  The explored/seen set is populated when a new
+successor $s'$ is generated and about to be added to the frontier, not when it
+is later expanded.  This change, applied consistently to BFS, DFS, UCS, and
+A$^{\ast}$, eliminated all duplicate expansions.  Post-fix, A$^{\ast}$
+consistently expands fewer nodes than BFS/UCS, as expected from the
+heuristic's admissibility.  We verified that solution plans and their lengths
+remain unchanged after the fix.
+
+\subsection{Validation: 15 Automated Runs All Passed}
+
+After applying the fixes described above, we ran 15 automated validation calls
+per endpoint.  All 45 total requests returned:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item A non-empty plan list.
+  \item A stats dictionary with the expected keys
+        (\texttt{algorithm}, \texttt{nodes\_expanded}, \texttt{plan\_length},
+        \texttt{time\_ms}, \texttt{max\_frontier}).
+  \item Consistent plan lengths across all four algorithms within each run.
+  \item \texttt{solvable = True} for all GA-generate calls.
+\end{itemize}
+
+No exceptions were raised and no malformed JSON responses were observed.
+
+\section{Limitations}
+\label{sec:limitations}
+
+We acknowledge several limitations of the current system.  The classical-search mode always solves the same fixed puzzle; varying the room layout or introducing non-uniform action costs would provide a broader and more rigorous benchmark.  The AI agent has full knowledge of the initial state, whereas a more realistic agent would need to maintain a belief state and explore the room to discover object locations.  Our agent also executes its plan open-loop with no replanning capability --- if an action failed unexpectedly (which cannot happen in our deterministic domain but would be relevant in a stochastic extension), the agent would not recover without a full restart.
+
+The A$^{\ast}$ heuristic's 7--13\% node reduction over BFS/UCS is modest; a stronger heuristic --- such as a landmark-based or pattern-database approach --- would likely yield larger savings, but the small state space (71 reachable nodes) leaves little room for improvement.  Our benchmark used only three independent runs; while node counts are deterministic (identical across runs), a larger sample (30+) would strengthen confidence in timing measurements and allow reporting means with 95\% confidence intervals.  The GA constructor now accepts an optional \texttt{seed} parameter for reproducibility, but the 15~runs reported in Table~\ref{tab:ga15runs} were collected before this fix and used unseeded random number generators.
+
+The GA converges to the maximum fitness of~126 in all 15 runs with zero standard deviation, indicating that the search space is small enough for the GA to solve trivially.  The three-area chromosome space with 4--5 initial stages offers limited combinatorial challenge; the GA is not being pushed to its limits.  A more demanding setup would raise the stage ceiling beyond~7, introduce additional fitness objectives (e.g.\ minimum backtracking depth, required number of distinct lock types), or expand the area set to increase the combinatorial complexity of the search space.  As it stands, the GA reliably produces solvable, difficulty-calibrated puzzles, but its optimisation capability is underutilised.
+
+On the GA side, running 20 individuals for 40 generations calls \texttt{solve\_dynamic} up to 800 times per puzzle generation.  This is fast for our domain (under 100\,ms total) but would become a bottleneck in domains with larger state spaces.  Session data is lost on page refresh because we chose not to implement a persistent database, which means there is no leaderboard or replay functionality.  Finally, while our room of approximately 100 primitives renders smoothly on mid-range hardware, significantly heavier scenes could cause frame drops on low-end devices since all rendering occurs on the browser's single rendering thread.
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  CHAPTER 8 — CONCLUSION AND FUTURE WORK                                     ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{Conclusion and Future Work}
+\label{chap:conclusion}
+
+\section{Summary of Contributions}
+
+We designed, implemented, and evaluated the Escape Room AI system, and we believe the project makes five concrete contributions.  The first is the \textbf{interactive 3-D escape room} itself: a richly detailed WebGL environment built from approximately 100 mesh primitives, lit by six light sources with physically-based materials, exponential fog, and ACES tone mapping, and equipped with a custom animation system, AABB collision detection, CSS2D floating labels, and a procedurally generated AUD logo canvas texture.  The second is our \textbf{four classical AI planners}: complete, well-documented implementations of BFS, DFS, UCS, and A$^{\ast}$ that share a common immutable state representation and consistent generation-time closed-list discipline.  Third, we provide \textbf{formal admissibility and consistency proofs} showing that our nine-term heuristic guarantees A$^{\ast}$ optimality in this domain.  Fourth, we developed a \textbf{genetic puzzle generator} that evolves escape-room configurations at three difficulty levels, using A$^{\ast}$ as the fitness oracle to enforce solvability and calibrate difficulty --- a pattern known as search-based procedural content generation.  Finally, we provide \textbf{honest engineering documentation}: we describe four non-trivial bugs we encountered during development (fitness ceiling miscalculation, frontier-column confusion, timing noise, and explored-marking inconsistency) along with the root-cause analysis and fix for each, providing a realistic picture of the development process rather than presenting only the polished final result.
+
+\section{Conclusions}
+
+Returning to the four research questions posed in Section~1.3, our experiments provide clear answers.  On \textbf{completeness and optimality} (RQ1): BFS, UCS, and A$^{\ast}$ are all complete and optimal in our finite domain; DFS is complete (with the visited set) but not optimal in general --- it finds optimal plans here only because the linear dependency chain offers essentially one productive path.  On \textbf{heuristic effectiveness} (RQ2), \textbf{BFS--UCS equivalence} (RQ3), and \textbf{GA puzzle quality} (RQ4), the following results apply.
+
+BFS and UCS expand
+identical node counts (71 each) when all action costs are uniform, validating both
+implementations and confirming RQ3.  A$^{\ast}$'s heuristic guidance reduces node expansion by
+approximately 4--19\% relative to BFS/UCS depending on difficulty, while still guaranteeing optimal plans (RQ2).  The modest margin reflects the small state space; in a larger, more branching domain the gap would be substantially wider.  DFS finds plans of the same optimal length but expands only 28--30 nodes --- fewer than even A$^{\ast}$ --- because the linear dependency chain means DFS's LIFO ordering happens to follow the single productive path directly.  However, this advantage is entirely domain-specific: on a puzzle with branching choices such as decoy keys or multiple solution paths, DFS would likely return a suboptimal plan or explore far more nodes before finding the goal.
+
+On RQ4, the genetic algorithm reliably produces valid, solvable puzzles within the target difficulty range: all 15 hard-difficulty runs converged to the maximum fitness of~126 with 100\% solvable champions.  However, the zero variance in final fitness (std~dev~= 0) indicates that the current scoring scheme is saturated --- the GA finds the global optimum trivially rather than performing interesting optimisation.  Whether the GA produces \emph{diverse or challenging} puzzles within this scheme is limited by the small chromosome space (three areas, 4--7 stages); extending the representation with more areas, additional objectives, or a higher stage ceiling would better exercise the GA's search capability.
+
+The project demonstrates that a functional, pedagogically rich AI planning
+system can be built from first principles in approximately 3,100 lines of
+code, without external AI libraries.
+
+\section{Future Work}
+
+Several directions could extend this work.  The most impactful would be \textbf{partially observable planning}, where the AI agent does not know object locations in advance and must explore the room to discover them; this would motivate online search algorithms such as LRTA$^{\ast}$~\cite{korf1990real}.  We could also replace the GA with a \textbf{constraint satisfaction solver} to generate puzzles with hard guarantees on difficulty ranges rather than relying on stochastic optimisation.  Adding \textbf{multi-player and adversarial modes} --- for instance, a second player controlled by a minimax or MCTS agent whose goal is to re-lock objects --- would introduce game-theoretic planning challenges.
+
+On the domain side, a \textbf{richer state space} with time-limited mechanics, numerical combination locks, and inter-room navigation would justify more powerful planning formalisms such as PDDL.  Assigning \textbf{variable action costs} to long-distance moves would differentiate UCS from BFS more meaningfully and provide a truer test of cost-sensitive search.  We could also model the puzzle using \textbf{hierarchical task networks}~\cite{nau2003shop2} to exploit the explicit hierarchical structure of the dependency chain.
+
+Finally, a \textbf{user study} comparing human performance across difficulty levels to ground-truth AI plan lengths would ground our difficulty metrics in real player behaviour, and adding a \textbf{persistent leaderboard} via Flask-SQLAlchemy would enable longitudinal data collection across play sessions.
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  BIBLIOGRAPHY                                                               ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\begin{thebibliography}{22}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibitem{russell2020ai}
+S.~Russell and P.~Norvig,
+\textit{Artificial Intelligence: A Modern Approach}, 4th~ed.
+Hoboken, NJ: Pearson, 2020.
+
+\bibitem{fikes1971strips}
+R.~E.~Fikes and N.~J.~Nilsson,
+``STRIPS: A new approach to the application of theorem proving to problem
+solving,''
+\textit{Artificial Intelligence}, vol.~2, no.~3--4, pp.~189--208, 1971.
+
+\bibitem{hart1968formal}
+P.~E.~Hart, N.~J.~Nilsson, and B.~Raphael,
+``A formal basis for the heuristic determination of minimum cost paths,''
+\textit{IEEE Transactions on Systems Science and Cybernetics}, vol.~4, no.~2,
+pp.~100--107, 1968.
+
+\bibitem{dijkstra1959note}
+E.~W.~Dijkstra,
+``A note on two problems in connexion with graphs,''
+\textit{Numerische Mathematik}, vol.~1, no.~1, pp.~269--271, 1959.
+
+\bibitem{pearl1984heuristics}
+J.~Pearl,
+\textit{Heuristics: Intelligent Search Strategies for Computer Problem Solving}.
+Reading, MA: Addison-Wesley, 1984.
+
+\bibitem{culberson1998pattern}
+J.~C.~Culberson and J.~Schaeffer,
+``Pattern databases,''
+\textit{Computational Intelligence}, vol.~14, no.~3, pp.~318--334, 1998.
+
+\bibitem{holland1992adaptation}
+J.~H.~Holland,
+\textit{Adaptation in Natural and Artificial Systems}, 2nd~ed.
+Cambridge, MA: MIT Press, 1992.
+
+\bibitem{goldberg1989genetic}
+D.~E.~Goldberg,
+\textit{Genetic Algorithms in Search, Optimization, and Machine Learning}.
+Reading, MA: Addison-Wesley, 1989.
+
+\bibitem{miller1995genetic}
+B.~L.~Miller and D.~E.~Goldberg,
+``Genetic algorithms, tournament selection, and the effects of noise,''
+\textit{Complex Systems}, vol.~9, no.~3, pp.~193--212, 1995.
+
+\bibitem{shaker2016procedural}
+N.~Shaker, J.~Togelius, and M.~J.~Nelson,
+\textit{Procedural Content Generation in Games}.
+Cham: Springer, 2016.
+
+\bibitem{togelius2011search}
+J.~Togelius, G.~N.~Yannakakis, K.~O.~Stanley, and C.~Browne,
+``Search-based procedural content generation: A taxonomy and survey,''
+\textit{IEEE Transactions on Computational Intelligence and AI in Games},
+vol.~3, no.~3, pp.~172--186, 2011.
+
+\bibitem{browne2012evolutionary}
+C.~Browne,
+\textit{Evolutionary Game Design}.
+London: Springer, 2012.
+
+\bibitem{dormans2010adventures}
+J.~Dormans,
+``Adventures in level design: Generating missions and spaces for action
+adventure games,''
+in \textit{Proc.\ 2010 Workshop on Procedural Content Generation in Games},
+Monterey, CA, Jun.~2010.
+
+\bibitem{nicholson2015peeking}
+S.~Nicholson,
+``Peeking behind the locked door: A survey of escape room facilities,''
+White Paper, 2015.
+[Online]. Available:
+\url{http://scottnicholson.com/pubs/erfacwhite.pdf} [Accessed April~2026]
+
+\bibitem{korf1990real}
+R.~E.~Korf,
+``Real-time heuristic search,''
+\textit{Artificial Intelligence}, vol.~42, no.~2--3, pp.~189--211, 1990.
+
+\bibitem{nau2003shop2}
+D.~Nau, T.~C.~Au, O.~Ilghami, U.~Kuter, J.~W.~Murdock, D.~Wu, and F.~Yaman,
+``SHOP2: An HTN planning system,''
+\textit{Journal of Artificial Intelligence Research}, vol.~20, pp.~379--404,
+2003.
+
+\bibitem{silver2016mastering}
+D.~Silver, A.~Huang, C.~J.~Maddison, A.~Guez, L.~Sifre, G.~van~den~Driessche,
+J.~Schrittwieser, I.~Antonoglou, V.~Panneershelvam, M.~Lanctot, et~al.,
+``Mastering the game of Go with deep neural networks and tree search,''
+\textit{Nature}, vol.~529, no.~7587, pp.~484--489, 2016.
+
+\bibitem{gh_escaperoom}
+H.~Raheem, ``Escape-Room-: AI-based escape room simulation,''
+GitHub repository, 2024. [Online]. Available:
+\url{https://github.com/hamzaraheem06/Escape-Room-}
+
+\bibitem{gh_breakingblocks}
+Badawy, ``BreakingBlocks: AI puzzle solver with 7 search algorithms,''
+GitHub repository, 2024. [Online]. Available:
+\url{https://github.com/Badawy403/BreakingBlocks}
+
+\bibitem{gh_escaipe}
+Shyke, ``EscAIpe Room --- Bank Breakout: AI-powered escape room game,''
+GitHub repository, 2024. [Online]. Available:
+\url{https://github.com/shyke0611/EscAIpe-Room-Game-Bank-Breakout}
+
+\bibitem{gh_escapedemo}
+M.~Reddy, ``Escape-Room-Demo: 3-D browser escape room with React and Three.js,''
+GitHub repository, 2026. [Online]. Available:
+\url{https://github.com/mahender-reddy85/escape-room-demo}
+
+\bibitem{gh_zeldagen}
+DanielVip3, ``Zeldagen: Procedural Zelda-like dungeon generation with genetic algorithms,''
+GitHub repository, 2024. [Online]. Available:
+\url{https://github.com/DanielVip3/zeldagen}
+
+\end{thebibliography}
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  APPENDIX A — HOW TO RUN                                                    ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\appendix
+\chapter{How to Run}
+\label{app:run}
+
+\section{Prerequisites}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Python 3.10 or newer.
+  \item A modern browser with WebGL2 support
+        (Chrome 100+, Firefox 100+, Edge 100+).
+  \item Internet access (Three.js is loaded from the jsDelivr CDN).
+\end{itemize}
+
+\section{Installation}
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Open a terminal and navigate to the project root:
+\begin{verbatim}
+cd escape_room_ai
+\end{verbatim}
+  \item Install Python dependencies:
+\begin{verbatim}
+pip install -r requirements.txt
+\end{verbatim}
+  The only runtime dependency is \texttt{flask}.  All other modules used (\texttt{collections}, \texttt{heapq}, \texttt{dataclasses}, \texttt{time}, \texttt{random}, \texttt{copy}) are part of the Python standard library and require no additional installation.  The front end loads Three.js from a CDN, so no \texttt{npm install} step is needed.
+\end{enumerate}
+
+\section{Starting the Server}
+
+\begin{verbatim}
+python server.py
+\end{verbatim}
+
+The terminal will print:
+
+\begin{verbatim}
+  Escape Room AI  --  http://localhost:5000
+\end{verbatim}
+
+Open \texttt{http://localhost:5000} in your browser.
+
+\section{Playing the Game}
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Select a difficulty level (Easy / Medium / Hard) on the start screen.
+  \item Click \textbf{Click to Enter} to acquire pointer lock and enter the
+        room.
+  \item Use \textbf{WASD} to move, \textbf{mouse} to look around.
+  \item Press \textbf{E} when the prompt bar shows an object label to interact.
+  \item Press \textbf{Tab} to switch to AI mode; the selected algorithm solves
+        the puzzle automatically.
+  \item Press \textbf{1}, \textbf{2}, \textbf{3}, \textbf{4} to cycle through
+        BFS, DFS, UCS, A$^{\ast}$.
+  \item Click \textbf{Benchmark All 4} on the right panel to run all algorithms
+        back-to-back.
+  \item Press \textbf{R} to reset the room at any time.
+  \item Press \textbf{Escape} to temporarily release pointer lock.
+\end{enumerate}
+
+\section{Generating a GA Puzzle}
+
+The browser integrates GA generation into the right panel.  Alternatively, you
+can call the endpoint directly:
+
+\begin{verbatim}
+POST http://localhost:5000/api/generate
+Content-Type: application/json
+{"difficulty": "hard"}
+\end{verbatim}
+
+The response contains the generated \texttt{puzzle} (stage list) and
+\texttt{ga\_stats} (best fitness, generations, fitness history).  Pressing
+\texttt{Tab} after a GA puzzle is loaded will invoke the AI to solve it using
+the selected algorithm.
+
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  APPENDIX B — PROJECT FILE STRUCTURE                                        ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+\chapter{Project File Structure}
+\label{app:filestructure}
+
+The annotated directory tree below describes every file in the project.
+
+\begin{verbatim}
+escape_room_ai/
+|
++-- server.py
+|     Flask application (104 lines).
+|     Defines three REST endpoints:
+|       POST /api/solve        classical search on fixed puzzle
+|       POST /api/generate     GA puzzle generation
+|       POST /api/solve_ga     classical search on GA puzzle
+|     Stateless: GameState is reconstructed fresh for each request.
+|
++-- requirements.txt
+|     Python dependencies: flask
+|
++-- ai/
+|   |
+|   +-- __init__.py          (empty package marker)
+|   |
+|   +-- state.py             (49 lines)
+|   |     Defines GameState as a @dataclass(frozen=True) with 10 fields.
+|   |     Provides GameState.initial() factory and is_goal() test.
+|   |     All instances are immutable and hashable.
+|   |
+|   +-- actions.py           (161 lines)
+|   |     Defines Action base class and 13 concrete actions:
+|   |       5 x MoveAction (one per region)
+|   |       PickUpSmallKey, UnlockDrawer, PickUpCabinetKey,
+|   |       UnlockCabinet, ReadCode, EnterCodeSafe,
+|   |       PickUpMasterKey, UnlockExit
+|   |     get_all_actions() returns the complete list.
+|   |     All action costs = 1.0.
+|   |
+|   +-- puzzle_config.py     (69 lines)
+|   |     Defines Stage and PuzzleConfig dataclasses.
+|   |     AREAS and PLAY_AREAS constants.
+|   |     PuzzleConfig.to_dict() for JSON serialisation.
+|   |
+|   +-- dynamic_solver.py    (299 lines)
+|   |     Defines DynState frozen dataclass (generic state for GA puzzles).
+|   |     _Move, _Pickup, _Unlock action classes with __slots__.
+|   |     _h(): generalised admissible heuristic.
+|   |     solve_dynamic(): A* used as GA fitness oracle.
+|   |     solve_ga(): multi-algorithm solver for GA puzzles.
+|   |     _bfs, _dfs, _ucs, _astar: internal full-plan solvers.
+|   |
+|   +-- genetic.py           (248 lines)
+|   |     PuzzleGA class (population=20, generations=40).
+|   |     _random_chrom(), _to_config(), _fitness(),
+|   |     _tournament(), _crossover(), _mutate(), run().
+|   |     _TARGETS dict for difficulty -> plan-length target ranges.
+|   |
+|   +-- algorithms/
+|       |
+|       +-- __init__.py      (8 lines)
+|       |     ALGORITHMS = {'BFS': bfs, 'DFS': dfs,
+|       |                   'UCS': ucs, 'A*': astar}
+|       |
+|       +-- bfs.py           (44 lines)   Breadth-First Search
+|       +-- dfs.py           (44 lines)   Depth-First Search
+|       +-- ucs.py           (46 lines)   Uniform-Cost Search
+|       +-- astar.py         (72 lines)   A* with 9-term heuristic
+|
++-- static/
+    |
+    +-- index.html           (128 lines)
+    |     Single-page HTML shell.  Defines canvas, HUD panels,
+    |     overlays (start, win), prompt bar, toast, controls hint.
+    |     Imports game.js as an ES module via importmap (Three.js r160).
+    |
+    +-- style.css            (160 lines)
+    |     All HUD, overlay, and label styles.
+    |     Responsive layout with fixed side panels.
+    |
+    +-- game.js              (~1700 lines)
+          Three.js game engine.  Sections:
+            Constants & level config (AREA_POS, LEVELS, KEY_SCALE)
+            GA area position mapping (GA_KEY_AREA_POSITIONS)
+            Hiding spot catalog (HIDING_SPOTS, 10 spots)
+            Lock fixture catalog (LOCK_FIXTURES, 4 fixtures)
+            Animation system (pushAnim, stepAnims, _anims[])
+            Renderer & scene setup (fog, tone mapping, shadows)
+            CSS2DRenderer for floating labels
+            Controls (PointerLockControls)
+            Game state (freshState, gs, gameMode)
+            Lighting (setupLighting, 6 sources)
+            Room geometry (buildRoom, ~100 BoxGeometry objects)
+            AUD logo canvas texture (Canvas2D -> CanvasTexture)
+            Interactable class (highlight, raycast, label, pose)
+            Object creation (createObjects, 7 interactables)
+            State transitions (applyAction, syncToState)
+            Player movement (WASD + blocked AABB)
+            Raycasting (checkHover, doInteract)
+            AI agent (spawnAgent, updateAgent, startAIMode)
+            Plan execution (executePlan, executePlanGA)
+            Session guard (aiSessionId)
+            Win & reset (triggerWin, resetGame)
+            Benchmark (runBenchmark, showBenchmark)
+            GA integration (loadGAPuzzle, gaOpenSpot,
+                           gaPickupKey, gaUnlockLock)
+            HUD update (updateHUD, showMetrics, toast)
+            Main render loop (animate, requestAnimationFrame)
+\end{verbatim}
+
+\chapter{Sample GA Output}
+\label{app:gasample}
+
+Below is the actual champion chromosome produced by \texttt{PuzzleGA('hard', seed=0)}.  Each gene encodes one puzzle stage: an item to collect and a lock to open.
+
+\begin{lstlisting}[style=pyStyle, caption={Champion chromosome (seed=0, 7 stages, fitness 126).}]
+[
+  {"item_area": "cabinet_area", "lock_area": "cabinet_area"},
+  {"item_area": "cabinet_area", "lock_area": "cabinet_area"},
+  {"item_area": "desk_area",    "lock_area": "desk_area"},
+  {"item_area": "cabinet_area", "lock_area": "cabinet_area"},
+  {"item_area": "cabinet_area", "lock_area": "safe_area"},
+  {"item_area": "safe_area",    "lock_area": "cabinet_area"},
+  {"item_area": "cabinet_area", "lock_area": "exit_area"}
+]
+\end{lstlisting}
+
+A$^{\ast}$ produces this 20-step plan (65 nodes expanded, 0.31\,ms):
+
+\begin{lstlisting}[style=pyStyle, caption={A* plan for the seed-0 champion.}]
+["move_to_cabinet_area", "pick_up_key_0", "unlock_lock_0",
+ "pick_up_key_1", "unlock_lock_1", "move_to_desk_area",
+ "pick_up_key_2", "unlock_lock_2", "move_to_cabinet_area",
+ "pick_up_key_3", "unlock_lock_3", "pick_up_key_4",
+ "move_to_safe_area", "unlock_lock_4", "pick_up_key_5",
+ "move_to_cabinet_area", "unlock_lock_5", "pick_up_master_key",
+ "move_to_exit_area", "unlock_exit"]
+\end{lstlisting}
+
+The plan length (20 steps) falls within the hard-difficulty target range (14--20), and all four areas appear across the stages, which is why this chromosome earns the maximum fitness of $20 + 50 + 28 + 28 = 126$.  Note that six of the seven stages use \texttt{cabinet\_area} --- the fitness function rewards area \emph{diversity} (number of distinct areas), not balanced usage, so a lopsided chromosome scores equally as long as the full set of four areas appears at least once.  This is an observed artifact of the diversity metric; a more refined fitness function could reward balanced area distribution.
+
+This output is reproducible via \texttt{PuzzleGA('hard',~seed=0)}.  The 65~nodes expanded here differ from the 62--68 in Table~\ref{tab:benchmark} because those three runs used unseeded random number generators and thus produced different puzzle configurations.
+
+\end{document}

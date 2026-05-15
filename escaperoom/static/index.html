@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escape Room — AI Planning</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":          "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ── 3-D canvas ─────────────────────────────────────────────────────── -->
+  <canvas id="c"></canvas>
+
+  <!-- ── Click-to-start overlay ────────────────────────────────────────── -->
+  <div id="start-overlay">
+    <div class="start-card">
+      <div class="start-logo">&#9670;</div>
+      <h1>Escape Room <span>AI</span></h1>
+      <p class="start-sub">Classical AI Planning · BFS · DFS · UCS · A*</p>
+
+      <div class="start-difficulty">
+        <p class="start-diff-label">SELECT DIFFICULTY</p>
+        <div class="start-level-grid">
+          <button class="level-btn active" data-level="easy">Easy</button>
+          <button class="level-btn" data-level="medium">Medium</button>
+          <button class="level-btn" data-level="hard">Hard</button>
+        </div>
+        <p id="level-hint" class="level-hint-text">Key is on the desk.</p>
+      </div>
+
+      <button id="start-btn">Click to Enter</button>
+      <p id="ga-status" class="ga-status-text"></p>
+      <div class="start-controls">
+        <span>WASD Move</span><span>Mouse Look</span>
+        <span>E Interact</span><span>Tab → AI Mode</span>
+        <span>1–4 Algorithm</span><span>R Reset</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Crosshair ─────────────────────────────────────────────────────── -->
+  <div id="crosshair"></div>
+
+  <!-- ── TOP BAR — AI action display ──────────────────────────────────── -->
+  <div id="action-bar" class="hidden">
+    <span id="action-text"></span>
+  </div>
+
+  <!-- ── LEFT panel — inventory + mode ────────────────────────────────── -->
+  <div id="panel-left">
+    <div id="mode-badge" class="badge badge-human">HUMAN MODE</div>
+    <div id="level-badge" class="badge badge-level">EASY</div>
+    <div class="panel-card" id="inv-card">
+      <div class="card-title">Inventory</div>
+      <div id="inv-list"><span class="inv-empty">Empty</span></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT panel — algorithm + metrics ─────────────────────────────── -->
+  <div id="panel-right">
+    <div class="panel-card">
+      <div class="card-title">Algorithm</div>
+      <div id="algo-grid">
+        <button class="algo-btn" data-algo="BFS">BFS</button>
+        <button class="algo-btn" data-algo="DFS">DFS</button>
+        <button class="algo-btn" data-algo="UCS">UCS</button>
+        <button class="algo-btn active" data-algo="A*">A*</button>
+      </div>
+      <button id="benchmark-btn">Benchmark All 4</button>
+      <div class="card-hint">Tab → run AI</div>
+    </div>
+
+    <div class="panel-card hidden" id="metrics-card">
+      <div class="card-title">Search Metrics</div>
+      <div id="metrics-body"></div>
+    </div>
+
+    <div class="panel-card hidden" id="benchmark-card">
+      <div class="card-title">Benchmark — Same Puzzle</div>
+      <div id="benchmark-body"></div>
+    </div>
+
+    <div class="panel-card hidden" id="ga-card">
+      <div class="card-title">GA Puzzle</div>
+      <div id="ga-body"></div>
+      <div id="ga-structure"></div>
+      <canvas id="ga-chart" width="220" height="90"></canvas>
+    </div>
+  </div>
+
+  <!-- ── BOTTOM — interact prompt ──────────────────────────────────────── -->
+  <div id="prompt-bar" class="hidden">
+    <kbd>E</kbd> <span id="prompt-text"></span>
+  </div>
+
+  <!-- ── Toast notification ────────────────────────────────────────────── -->
+  <div id="toast" class="hidden"></div>
+
+  <!-- ── Controls hint strip (bottom-left) ─────────────────────────────── -->
+  <div id="controls-hint">
+    WASD&nbsp;Move &nbsp;·&nbsp; Mouse&nbsp;Look &nbsp;·&nbsp;
+    E&nbsp;Interact &nbsp;·&nbsp; Tab&nbsp;AI&nbsp;Mode &nbsp;·&nbsp;
+    1-4&nbsp;Algo &nbsp;·&nbsp; R&nbsp;Reset
+  </div>
+
+  <!-- ── WIN overlay ────────────────────────────────────────────────────── -->
+  <div id="win-overlay" class="hidden">
+    <div class="win-card">
+      <div class="win-icon">&#10003;</div>
+      <h1>You Escaped!</h1>
+      <p id="win-sub"></p>
+      <button id="win-reset">Play Again</button>
+    </div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>
